@@ -20,6 +20,6 @@ setup(
     ],
     packages='reprexpy',
     install_requires=[
-        'pyperclip'
+        'pyperclip', "asttokens", "nbconvert"
     ]
 )
