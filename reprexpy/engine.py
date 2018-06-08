@@ -27,6 +27,6 @@ def _run_nb(code_chunks, kernel_name):
     nb = nbformat.v4.new_notebook()
     nb["cells"] = [nbformat.v4.new_code_cell("\n".join(i)) for i in code_chunks]
     ep = nbconvert.preprocessors.ExecutePreprocessor(timeout=600, kernel_name=kernel_name, allow_errors=True)
-    (node_out, _) = ep.preprocess(nb, {"metadata": {"path": "."}})
+    (node_out, _) = ep.preprocess(nb, {})
     return [i.outputs for i in node_out.cells]
 
