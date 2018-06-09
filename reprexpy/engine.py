@@ -19,7 +19,6 @@ def _get_statement_chunks(code_str):
     return [code_lines[start - 1:end] for start, end in zip(starts, ends)]
 
 
-# todo: all passing in of kernal object instead of name?, allow users to no have to have matplotlib
 def _run_nb(code_chunks, kernel_name):
     code_chunks = [
         ["import IPython.display; import matplotlib.pyplot; IPython.display.set_matplotlib_close(False); matplotlib.pyplot.ioff()"]
@@ -27,6 +26,6 @@ def _run_nb(code_chunks, kernel_name):
     nb = nbformat.v4.new_notebook()
     nb["cells"] = [nbformat.v4.new_code_cell("\n".join(i)) for i in code_chunks]
     ep = nbconvert.preprocessors.ExecutePreprocessor(timeout=600, kernel_name=kernel_name, allow_errors=True)
-    (node_out, _) = ep.preprocess(nb, {})
-    return [i.outputs for i in node_out.cells]
+    node_out, _ = ep.preprocess(nb, {})
+    return node_out
 

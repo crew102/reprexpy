@@ -1,4 +1,5 @@
 import pytest
+import nbformat
 from reprexpy.engine import _get_statement_chunks
 from reprexpy.engine import _run_nb
 
@@ -14,9 +15,9 @@ def test_statement_parser():
     assert len(s_chunks) == 14
 
 
-# todo: refactor this so _get_statement_chunks isn't tested twice, add additional tests on actual outputs
+# todo: refactor this so _get_statement_chunks isn't tested twice
 def test_nb_exe():
     code_str = read_ex_fi("../examples/basic-example.py")
     s_chunks = _get_statement_chunks(code_str)
     out = _run_nb(s_chunks, "python3")
-    assert len(out) == 15
+    assert isinstance(out, type(nbformat.v4.new_notebook()))
