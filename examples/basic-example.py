@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 plt.plot([1,2,3,4]);
 plt.ylabel('some numbers');
 plt.show()
+plt.close()
 
 # here is a comment
 # here is another comment
@@ -21,6 +22,12 @@ print(k)
 # another comment
 something = "ok then"
 something
+
+# another plot
+plt.plot([1,2,3,4]);
+plt.ylabel('some more numbers');
+plt.show()
+plt.close()
 
 ## cool function
 def some_fun():
