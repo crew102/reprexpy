@@ -2,8 +2,8 @@ import asttokens
 import nbconvert
 import nbformat
 
-# a statement "chunk" includes all lines (including comments/empty line) that come after the preceding statement but
-# come before this statement. each chunk will be placed in a notebook cell.
+# a statement "chunk" includes all lines (including comments/empty line) that come after the preceding statement and
+# before the statement in this chunk. each chunk will be placed in a notebook cell.
 def _get_statement_chunks(code_str):
     tok = asttokens.ASTTokens(code_str, parse=True)
 
