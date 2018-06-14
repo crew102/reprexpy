@@ -21,8 +21,10 @@ def _get_statement_chunks(code_str):
 
 def _run_nb(code_chunks, kernel_name):
     code_chunks = [
-        ["import IPython.display; import matplotlib.pyplot; IPython.display.set_matplotlib_close(False); matplotlib.pyplot.ioff()"]
-    ] + code_chunks
+                      ["%matplotlib inline"],  # store plot outputs inline - only works inside notebooks
+                      ["import IPython.display; IPython.display.set_matplotlib_close(False)"],
+                      ["import matplotlib; import matplotlib.pyplot; matplotlib.pyplot.ioff()"]  # interactive backend
+                  ] + code_chunks
     nb = nbformat.v4.new_notebook()
     nb["cells"] = [nbformat.v4.new_code_cell("\n".join(i)) for i in code_chunks]
     ep = nbconvert.preprocessors.ExecutePreprocessor(timeout=600, kernel_name=kernel_name, allow_errors=True)
