@@ -30,4 +30,3 @@ def _run_nb(code_chunks, kernel_name):
     ep = nbconvert.preprocessors.ExecutePreprocessor(timeout=600, kernel_name=kernel_name, allow_errors=True)
     node_out, _ = ep.preprocess(nb, {})
     return node_out
-
