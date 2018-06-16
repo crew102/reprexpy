@@ -12,7 +12,7 @@ def read_ex_fi(file):
 def test_statement_parser():
     code_str = read_ex_fi("../examples/basic-example.py")
     s_chunks = _get_statement_chunks(code_str)
-    assert len(s_chunks) == 19
+    assert len(s_chunks) == 21
 
 
 # todo: refactor this so _get_statement_chunks isn't tested twice
