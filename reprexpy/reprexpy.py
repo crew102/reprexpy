@@ -33,8 +33,10 @@ def _run_nb(code_chunks, kernel_name):
 
 
 def _extract_outputs(cells):
-    outputs = [None if not i["outputs"] else i["outputs"] for i in cells]
-    return outputs[3:]
+    # there should be at most 1 output for each cell, b/c we broke cells into python statements
+    all_outputs = [None if not i["outputs"] else i["outputs"][0] for i in cells]
+    # todo: throw warning if any of the first three statements that we inserted threw an error
+    return all_outputs[3:]
 
 
 # helper used in _get_code_block_start_stops
@@ -42,8 +44,6 @@ def _is_plot_output(el):
     # output of cell can be an empty list
     if not el:
         return False
-    # if isn't an empty list, it's a list of length 1 containing a notebooknode
-    el = el[0]
     # check if the node is for an image output
     if el.output_type == "display_data":
         if hasattr(el, "data"):
@@ -57,7 +57,7 @@ def _get_code_block_start_stops(outputs):
     last_ind = len_outputs - 1
 
     # get list of indexes that define "code block" ends... a statement is considered the last statement in a code block
-    # if returned plot output
+    # if returned plot output. note i[1] is the actual element here, i[0] is the element's index
     cb_stops = [i[0] for i in enumerate(outputs) if _is_plot_output(i[1])]
     cb_stops = list(sorted(set(cb_stops + [last_ind])))
 
