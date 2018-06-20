@@ -1,6 +1,7 @@
 import asttokens
 import nbconvert
 import nbformat
+import re
 
 # a statement "chunk" includes all lines (including comments/empty line) that come after the preceding statement and
 # before the statement in this chunk. each chunk will be placed in a notebook cell.
@@ -71,3 +72,30 @@ def _get_code_block_start_stops(outputs):
         ' the same length of as list of stop indexes. starts is {} while stops is {}'.format(cb_starts, cb_stops)
 
     return list(zip(cb_starts, cb_stops))
+
+
+# we need to extract the text output for all output types except display_data. during this process we also process
+# some of the text outputs where needed (e.g., strip ansi color codes from error traceback text) and add our output
+# comment char to the beginning of each text output line.
+def get_one_txt_output(output_el, comment='#>'):
+    if not output_el:
+        return None
+    elif output_el.output_type == 'execute_result':
+        # results of type execute_result should always be strings, so have to convert to list (of strings)
+        txt = [output_el["data"]["text/plain"]]
+    elif output_el.output_type == 'stream':
+        print_txt = output_el['text']
+        # stream results will also be presented as strings, but we need to add the comment char after each newline of
+        # printed text. note, this will strip the trailing newlines that usually come with calling `print`, which is
+        # desired behavior in our case.
+        txt = print_txt.splitlines()
+    elif output_el.output_type == "error":
+        # error traceback is given in a list, with one line of traceback per element, so no need to convert output to
+        # list...we do have to remove ansi color codes from traceback text though.
+        txt = [re.sub('\x1b\\[(.*?)([@-~])', '', i) for i in output_el["traceback"]]
+    elif output_el.output_type == "display_data":
+        return None
+    else:
+        assert False, "Ran into an unknown output_type"
+
+    return [comment + ' ' + i for i in txt]
