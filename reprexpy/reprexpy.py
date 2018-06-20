@@ -77,7 +77,7 @@ def _get_code_block_start_stops(outputs):
 # we need to extract the text output for all output types except display_data. during this process we also process
 # some of the text outputs where needed (e.g., strip ansi color codes from error traceback text) and add our output
 # comment char to the beginning of each text output line.
-def get_one_txt_output(output_el, comment='#>'):
+def _get_one_txt_output(output_el, comment='#>'):
     if not output_el:
         return None
     elif output_el.output_type == 'execute_result':
