@@ -53,13 +53,18 @@ def _is_plot_output(el):
     return False
 
 
+# todo: change this so it looks for any plot output in the list (i.e., a list of outputs with a text and plot output
+def _any_plot_outputs(lst):
+    return any([_is_plot_output(i) for i in lst])
+
+
 def _get_code_block_start_stops(outputs):
     len_outputs = len(outputs)
     last_ind = len_outputs - 1
 
     # get list of indexes that define "code block" ends... a statement is considered the last statement in a code block
     # if returned plot output. note i[1] is the actual element here, i[0] is the element's index
-    cb_stops = [i[0] for i in enumerate(outputs) if _is_plot_output(i[1])]
+    cb_stops = [i[0] for i in enumerate(outputs) if _any_plot_outputs(i[1])]
     cb_stops = list(sorted(set(cb_stops + [last_ind])))
 
     # first start index will always be first statement (i.e., index 0). then, to get the remaining start indexes, we
