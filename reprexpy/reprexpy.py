@@ -2,8 +2,9 @@ import asttokens
 import nbconvert
 import nbformat
 import re
+import warnings
 
-# a statement "chunk" includes all lines (including comments/empty line) that come after the preceding statement and
+# a statement "chunk" includes all lines (including comments/empty lines) that come after the preceding statement and
 # before the statement in this chunk. each chunk will be placed in a notebook cell.
 def _get_statement_chunks(code_str):
     tok = asttokens.ASTTokens(code_str, parse=True)
@@ -33,18 +34,20 @@ def _run_nb(code_chunks, kernel_name):
     return node_out
 
 
+def warn_if_prep_err(lst):
+    if lst:
+        if lst[0].output_type == "error":
+            warnings.warn("Problem with using matplotlib when rendering your code")
+
+
 def _extract_outputs(cells):
-    # there should be at most 1 output for each cell, b/c we broke cells into python statements
-    all_outputs = [None if not i["outputs"] else i["outputs"][0] for i in cells]
-    # todo: throw warning if any of the first three statements that we inserted threw an error
+    all_outputs = [[] if not i["outputs"] else i["outputs"] for i in cells]
+    [warn_if_prep_err(i) for i in all_outputs[0:3]]
     return all_outputs[3:]
 
 
 # helper used in _get_code_block_start_stops
 def _is_plot_output(el):
-    # output of cell can be an empty list
-    if not el:
-        return False
     # check if the node is for an image output
     if el.output_type == "display_data":
         if hasattr(el, "data"):
@@ -53,7 +56,6 @@ def _is_plot_output(el):
     return False
 
 
-# todo: change this so it looks for any plot output in the list (i.e., a list of outputs with a text and plot output
 def _any_plot_outputs(lst):
     return any([_is_plot_output(i) for i in lst])
 
@@ -82,9 +84,9 @@ def _get_code_block_start_stops(outputs):
 # we need to extract the text output for all output types except display_data. during this process we also process
 # some of the text outputs where needed (e.g., strip ansi color codes from error traceback text) and add our output
 # comment char to the beginning of each text output line.
-def _get_one_txt_output(output_el, comment='#>'):
+def _get_one_txt_output(output_el, comment):
     if not output_el:
-        return None
+        return []
     elif output_el.output_type == 'execute_result':
         # results of type execute_result should always be strings, so have to convert to list (of strings)
         txt = [output_el["data"]["text/plain"]]
@@ -95,11 +97,13 @@ def _get_one_txt_output(output_el, comment='#>'):
         # desired behavior in our case.
         txt = print_txt.splitlines()
     elif output_el.output_type == "error":
-        # error traceback is given in a list, with one line of traceback per element, so no need to convert output to
-        # list...we do have to remove ansi color codes from traceback text though.
+        # error traceback is given in a list, usually with one line of traceback per element. we need to remove ansi
+        # color codes from traceback text and split any elements in list that are actually two lines, then concat lists.
         txt = [re.sub('\x1b\\[(.*?)([@-~])', '', i) for i in output_el["traceback"]]
+        txt = [i.splitlines() for i in txt]
+        txt = [x for i in txt for x in i]
     elif output_el.output_type == "display_data":
-        return None
+        return []
     else:
         assert False, "Ran into an unknown output_type"
 
