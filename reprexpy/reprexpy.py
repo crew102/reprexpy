@@ -86,7 +86,8 @@ def _get_code_block_start_stops(outputs):
 # comment char to the beginning of each text output line.
 def _get_one_txt_output(output_el, comment):
     if not output_el:
-        return []
+        pass
+        return None
     elif output_el.output_type == 'execute_result':
         # results of type execute_result should always be strings, so have to convert to list (of strings)
         txt = [output_el["data"]["text/plain"]]
@@ -103,8 +104,20 @@ def _get_one_txt_output(output_el, comment):
         txt = [i.splitlines() for i in txt]
         txt = [x for i in txt for x in i]
     elif output_el.output_type == "display_data":
-        return []
+        return None
     else:
         assert False, "Ran into an unknown output_type"
 
     return [comment + ' ' + i for i in txt]
+
+
+# for each element of the output list (i.e., for each output for a given cell), get all the text outputs of that cell
+# and merge them into a single list (each line of output is given a single el in list)
+def _get_cell_txt_outputs(outputs, comment):
+    tmp_out = [[_get_one_txt_output(j, comment) for j in i] for i in outputs]
+
+    # remove None values in lists
+    tmp_out = [[j for j in i if j] for i in tmp_out]
+
+    # merge multi-element lists (that are nested within temp_out) into single element lists
+    return [[x for i in one for x in i] for one in tmp_out]
