@@ -16,9 +16,9 @@ setup(
     author='Christopher Baker',
     author_email='chriscrewbaker@gmail.com',
     url='https://github.com/crew102/reprexpy/issues',
-    classifiers=[
-    ],
-    packages='reprexpy',
+    license='LICENSE.txt',
+    classifiers=[],
+    packages=['reprexpy'],
     install_requires=[
         'pyperclip',
         'asttokens',
@@ -26,6 +26,9 @@ setup(
         'nbformat',
         'matplotlib',
         'IPython',
-        'pyimgur'
+        'pyimgur',
+        'jupyter_client',
+        'jupyter',
+        'pytest'
     ],
 )
