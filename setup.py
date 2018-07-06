@@ -9,7 +9,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='reprexpy',
-    version='0.1.0.devl',
+    version='0.1.0dev',
     description='Render reproducible examples of code (port of R package `reprex`)',
     long_description=long_description,
     long_description_content_type='text/markdown',
