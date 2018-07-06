@@ -1,7 +1,6 @@
 import pytest
 import nbformat
-from reprexpy.engine import _get_statement_chunks
-from reprexpy.engine import _run_nb
+from reprexpy.reprexpy import _get_statement_chunks, _run_nb
 
 
 def read_ex_fi(file):
