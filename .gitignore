@@ -4,3 +4,5 @@ dist/
 */__pycache__
 .pytest_cache/
 reprexpy.egg-info/
+venv/
+.cache/
