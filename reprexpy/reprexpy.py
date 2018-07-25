@@ -4,8 +4,9 @@ import nbformat
 import re
 import warnings
 
-# a statement "chunk" includes all lines (including comments/empty lines) that come after the preceding statement and
-# before the statement in this chunk. each chunk will be placed in a notebook cell.
+
+# a statement "chunk" includes all lines (including comments/empty lines) that come after the preceding python statement
+# and before the python statement in this chunk. each chunk will be placed in a notebook cell.
 def _get_statement_chunks(code_str):
     tok = asttokens.ASTTokens(code_str, parse=True)
 
@@ -23,10 +24,10 @@ def _get_statement_chunks(code_str):
 
 def _run_nb(code_chunks, kernel_name):
     code_chunks = [
-                      ["%matplotlib inline"],  # store plot outputs inline - only works inside notebooks
-                      ["import IPython.display; IPython.display.set_matplotlib_close(False)"],
-                      ["import matplotlib; import matplotlib.pyplot; matplotlib.pyplot.ioff()"]  # interactive backend
-                  ] + code_chunks
+      ["%matplotlib inline"],  # store plot outputs inline - only works inside notebooks
+      ["import IPython.display; IPython.display.set_matplotlib_close(False)"],
+      ["import matplotlib; import matplotlib.pyplot; matplotlib.pyplot.ioff()"]  # interactive backend
+    ] + code_chunks
     nb = nbformat.v4.new_notebook()
     nb["cells"] = [nbformat.v4.new_code_cell("\n".join(i)) for i in code_chunks]
     ep = nbconvert.preprocessors.ExecutePreprocessor(timeout=600, kernel_name=kernel_name, allow_errors=True)
@@ -34,7 +35,7 @@ def _run_nb(code_chunks, kernel_name):
     return node_out
 
 
-def warn_if_prep_err(lst):
+def _warn_if_prep_err(lst):
     if lst:
         if lst[0].output_type == "error":
             warnings.warn("Problem with using matplotlib when rendering your code")
@@ -42,7 +43,7 @@ def warn_if_prep_err(lst):
 
 def _extract_outputs(cells):
     all_outputs = [[] if not i["outputs"] else i["outputs"] for i in cells]
-    [warn_if_prep_err(i) for i in all_outputs[0:3]]
+    [_warn_if_prep_err(i) for i in all_outputs[0:3]]
     return all_outputs[3:]
 
 
