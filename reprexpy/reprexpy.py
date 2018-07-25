@@ -3,6 +3,11 @@ import nbconvert
 import nbformat
 import re
 import warnings
+import pyperclip
+import pyimgur
+
+
+# Helper functions for reprexpy() ---------------------------
 
 
 # a statement "chunk" includes all lines (including comments/empty lines) that come after the preceding python statement
@@ -122,3 +127,71 @@ def _get_cell_txt_outputs(outputs, comment):
 
     # merge multi-element lists (that are nested within temp_out) into single element lists
     return [[x for i in one for x in i] for one in tmp_out]
+
+
+def _proc_one_display_data_node(node, client):
+    data = node["data"]["image/png"].encode()
+    req = client._send_request('https://api.imgur.com/3/image', method='POST', params={'image': data})
+    return "![](" + req["link"] + ")"
+
+
+def _get_plot_output_txt(one_out, client):
+    anyp = _any_plot_outputs(one_out)
+
+    if anyp:
+        ptxt_out = [_proc_one_display_data_node(i, client) for i in one_out if _is_plot_output(i)]
+        ptxt_out = '\n'.join(ptxt_out)
+        return '\n' + ptxt_out
+    else:
+        return ""
+
+
+# reprexpy() dev ---------------------------
+
+
+def reprexpy(x=None, infile=None, venue='gh', kernel_name='python3', outfile=None, comment='#>'):
+
+    # get code input string
+    if x is not None:
+        code_str = x
+    elif infile is not None:
+        with open(infile) as fi:
+            code_str = fi.read()
+    else:
+        code_str = pyperclip.paste()
+
+    statement_chunks = _get_statement_chunks(code_str)
+
+    node_out = _run_nb(statement_chunks, kernel_name)
+    outputs = _extract_outputs(node_out.cells)
+
+    start_stops = _get_code_block_start_stops(outputs)
+
+    # extract outputs that are text (i.e., outputs that are of type execute_result, stream, or error)
+    txt_outputs = _get_cell_txt_outputs(outputs, comment)
+
+    # add txt_outputs to statement_chunks
+    txt_chunks = [i + j if j else i for i, j in zip(statement_chunks, txt_outputs)]
+
+    if venue == 'so':
+        txt_chunks = [['    ' + j for j in i] for i in txt_chunks]
+
+    txt_chunks = ['\n'.join(i) for i in txt_chunks]
+
+    code_blocks = [txt_chunks[i[0]:(i[1] + 1)] for i in start_stops]
+    code_blocks = ['\n'.join(i) for i in code_blocks]
+
+    if venue == 'gh':
+        code_blocks = ["```python\n" + i + "\n```" for i in code_blocks]
+
+    client = pyimgur.Imgur("9f3460e67f308f6")
+
+    plot_txt_outputs = [_get_plot_output_txt(outputs[i[1]], client) for i in start_stops]
+
+    all_chunks_fin = [i + j for i, j in zip(code_blocks, plot_txt_outputs)]
+    out = '\n'.join(all_chunks_fin)
+
+    if venue == 'so':
+        out = '# <!-- language-all: lang-py -->\n' + out
+
+    return out
