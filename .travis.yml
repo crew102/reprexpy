@@ -6,3 +6,5 @@ install:
   - pip install --force-reinstall nbformat
 script:
   - pytest
+notifications:
+  email: false
