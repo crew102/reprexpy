@@ -149,7 +149,7 @@ def _get_plot_output_txt(one_out, client):
 # reprexpy() dev ---------------------------
 
 
-def reprexpy(x=None, infile=None, venue='gh', kernel_name='python3', outfile=None, comment='#>'):
+def reprexpy2(x=None, infile=None, venue='gh', kernel_name='python3', outfile=None, comment='#>'):
 
     # get code input string
     if x is not None:
@@ -195,3 +195,6 @@ def reprexpy(x=None, infile=None, venue='gh', kernel_name='python3', outfile=Non
         out = '# <!-- language-all: lang-py -->\n' + out
 
     return out
+
+def some_fun():
+    print("hi there")
