@@ -1,4 +1,3 @@
-import pytest
 import nbformat
 from reprexpy.reprex import _get_statement_chunks, _run_nb
 

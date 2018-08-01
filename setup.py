@@ -20,7 +20,6 @@ setup(
         'IPython',
         'pyimgur',
         'jupyter_client',
-        'jupyter',
-        'pytest'
+        'jupyter'
     ],
 )
