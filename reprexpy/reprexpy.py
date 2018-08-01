@@ -184,7 +184,7 @@ def reprexpy(x=None, infile=None, venue='gh', kernel_name='python3', outfile=Non
     if venue == 'gh':
         code_blocks = ["```python\n" + i + "\n```" for i in code_blocks]
 
-    client = pyimgur.Imgur("9f3460e67f308f6")
+    client = pyimgur.Imgur("14fb4fdc5c02a96")
 
     plot_txt_outputs = [_get_plot_output_txt(outputs[i[1]], client) for i in start_stops]
 
