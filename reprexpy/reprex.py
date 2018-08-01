@@ -195,6 +195,3 @@ def reprexpy2(x=None, infile=None, venue='gh', kernel_name='python3', outfile=No
         out = '# <!-- language-all: lang-py -->\n' + out
 
     return out
-
-def some_fun():
-    print("hi there")
