@@ -1,8 +1,9 @@
+import re
+import warnings
+
 import asttokens
 import nbconvert
 import nbformat
-import re
-import warnings
 import pyperclip
 import pyimgur
 
