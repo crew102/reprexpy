@@ -141,8 +141,8 @@ def _get_plot_output_txt(one_out, client):
 
     if anyp:
         ptxt_out = [_proc_one_display_data_node(i, client) for i in one_out if _is_plot_output(i)]
-        ptxt_out = '\n'.join(ptxt_out)
-        return '\n' + ptxt_out
+        ptxt_out = '\n\n'.join(ptxt_out)
+        return '\n\n' + ptxt_out
     else:
         return ""
 
@@ -190,7 +190,7 @@ def reprexpy2(x=None, infile=None, venue='gh', kernel_name='python3', outfile=No
     plot_txt_outputs = [_get_plot_output_txt(outputs[i[1]], client) for i in start_stops]
 
     all_chunks_fin = [i + j for i, j in zip(code_blocks, plot_txt_outputs)]
-    out = '\n'.join(all_chunks_fin)
+    out = '\n\n'.join(all_chunks_fin)
 
     if venue == 'so':
         out = '# <!-- language-all: lang-py -->\n' + out
