@@ -13,7 +13,7 @@ import pyimgur
 
 # a statement "chunk" includes all lines (including comments/empty lines) that come after the preceding python statement
 # and before the python statement in this chunk. each chunk will be placed in a notebook cell.
-def _get_statement_chunks(code_str):
+def _get_statement_chunks(code_str, si):
     tok = asttokens.ASTTokens(code_str, parse=True)
 
     ends = {statement.last_token.end[0] for statement in tok.tree.body}
@@ -25,17 +25,20 @@ def _get_statement_chunks(code_str):
     starts = starts[:-1]
 
     code_lines = code_str.splitlines()
-    return [code_lines[start - 1:end] for start, end in zip(starts, ends)]
+    schunks = [code_lines[start - 1:end] for start, end in zip(starts, ends)]
+    if si:
+        schunks = schunks + [["import reprexpy", "print(reprexpy.SessionInfo())"]]
+    return schunks
 
 
-def _run_nb(code_chunks, kernel_name):
-    code_chunks = [
+def _run_nb(statement_chunks, kernel_name):
+    statement_chunks = [
       ["%matplotlib inline"],  # store plot outputs inline - only works inside notebooks
       ["import IPython.display; IPython.display.set_matplotlib_close(False)"],
       ["import matplotlib; import matplotlib.pyplot; matplotlib.pyplot.ioff()"]  # interactive backend
-    ] + code_chunks
+    ] + statement_chunks
     nb = nbformat.v4.new_notebook()
-    nb["cells"] = [nbformat.v4.new_code_cell("\n".join(i)) for i in code_chunks]
+    nb["cells"] = [nbformat.v4.new_code_cell("\n".join(i)) for i in statement_chunks]
     ep = nbconvert.preprocessors.ExecutePreprocessor(timeout=600, kernel_name=kernel_name, allow_errors=True)
     node_out, _ = ep.preprocess(nb, {})
     return node_out
@@ -44,7 +47,7 @@ def _run_nb(code_chunks, kernel_name):
 def _warn_if_prep_err(lst):
     if lst:
         if lst[0].output_type == "error":
-            warnings.warn("Problem with using matplotlib when rendering your code")
+            warnings.warn("reprexpy encountered a problem when trying to import matplotlib")
 
 
 def _extract_outputs(cells):
@@ -67,13 +70,13 @@ def _any_plot_outputs(lst):
     return any([_is_plot_output(i) for i in lst])
 
 
-def _get_code_block_start_stops(outputs):
+def _get_code_block_start_stops(outputs, si):
     len_outputs = len(outputs)
     last_ind = len_outputs - 1
 
-    # get list of indexes that define "code block" ends... a statement is considered the last statement in a code block
-    # if returned plot output. note i[1] is the actual element here, i[0] is the element's index
-    cb_stops = [i[0] for i in enumerate(outputs) if _any_plot_outputs(i[1])]
+    # get list of indexes that define "code block" ends... a statement is considered the last statement in a block
+    # if that statement either returned a plot output or is the statement right before the call the SessionInfo()
+    cb_stops = [i[0] for i in enumerate(outputs) if _any_plot_outputs(i[1]) or (i[0] == last_ind - 1 and si)]
     cb_stops = list(sorted(set(cb_stops + [last_ind])))
 
     # first start index will always be first statement (i.e., index 0). then, to get the remaining start indexes, we
@@ -150,7 +153,7 @@ def _get_plot_output_txt(one_out, client):
 # reprexpy() dev ---------------------------
 
 
-def reprexpy2(x=None, infile=None, venue='gh', kernel_name='python3', outfile=None, comment='#>'):
+def reprexpy2(x=None, infile=None, venue='gh', kernel_name='python3', outfile=None, si=True, comment='#>'):
 
     # get code input string
     if x is not None:
@@ -161,12 +164,12 @@ def reprexpy2(x=None, infile=None, venue='gh', kernel_name='python3', outfile=No
     else:
         code_str = pyperclip.paste()
 
-    statement_chunks = _get_statement_chunks(code_str)
+    statement_chunks = _get_statement_chunks(code_str, si=si)
 
     node_out = _run_nb(statement_chunks, kernel_name)
     outputs = _extract_outputs(node_out.cells)
 
-    start_stops = _get_code_block_start_stops(outputs)
+    start_stops = _get_code_block_start_stops(outputs, si=si)
 
     # extract outputs that are text (i.e., outputs that are of type execute_result, stream, or error)
     txt_outputs = _get_cell_txt_outputs(outputs, comment)
