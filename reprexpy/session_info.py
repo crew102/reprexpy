@@ -24,7 +24,8 @@ class SessionInfo:
             ["Session info ----------------------------------------------------------"] +
             [key + ": " + value for key, value in self.session_info.items()] +
             ["Modules ---------------------------------------------------------------"] +
-            [key + ": " + value for key, value in self.modules.items()]
+            [key + ": " + value for key, value in self.modules.items()] +
+            ["*Imported by reprexpy"]
         )
         return "\n".join(fl)
 
@@ -61,5 +62,6 @@ class SessionInfo:
 
     def _get_module_sectn(self):
         imp_mods = self._get_imported_mods()
-        return {modname: self._get_version_info(modname, mod)
+        imp_by_repx = ["IPython", "matplotlib", "reprexpy"]
+        return {modname + "*" if modname in imp_by_repx else modname: self._get_version_info(modname, mod)
                 for modname, mod in imp_mods.items() if modname != "builtins"}
