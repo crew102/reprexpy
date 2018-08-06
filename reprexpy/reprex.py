@@ -173,7 +173,13 @@ def reprexpy2(x=None, infile=None, venue='gh', kernel_name=None,
         with open(infile) as fi:
             code_str = fi.read()
     else:
-        code_str = pyperclip.paste()
+        try:
+            code_str = pyperclip.paste()
+        except:
+            print(
+                "Could not retrieve code from the clipboard. Try putting your code in a file and using\n"
+                " the `infile` parameter instead of the clipboard."
+            )
 
     statement_chunks = _get_statement_chunks(code_str, si=si)
 
@@ -218,5 +224,10 @@ def reprexpy2(x=None, infile=None, venue='gh', kernel_name=None,
 
     if venue == 'so':
         out = '# <!-- language-all: lang-py -->\n' + out
+
+    try:
+        pyperclip.copy(out)
+    except:
+        warnings.warn("Could not copy rendered reprex to the clipboard.")
 
     return out
