@@ -40,7 +40,10 @@ def _run_nb(statement_chunks, kernel_name):
     ] + statement_chunks
     nb = nbformat.v4.new_notebook()
     nb["cells"] = [nbformat.v4.new_code_cell("\n".join(i)) for i in statement_chunks]
-    ep = nbconvert.preprocessors.ExecutePreprocessor(timeout=600, kernel_name=kernel_name, allow_errors=True)
+    if kernel_name is None:
+        ep = nbconvert.preprocessors.ExecutePreprocessor(timeout=600, allow_errors=True)
+    else:
+        ep = nbconvert.preprocessors.ExecutePreprocessor(timeout=600, allow_errors=True, kernel_name=kernel_name)
     node_out, _ = ep.preprocess(nb, {})
     return node_out
 
@@ -160,7 +163,7 @@ def _get_advertisement():
 # reprexpy() dev ---------------------------
 
 
-def reprexpy2(x=None, infile=None, venue='gh', kernel_name='python3', outfile=None,
+def reprexpy2(x=None, infile=None, venue='gh', kernel_name=None,
               comment='#>', si=True, advertise=True):
 
     # get code input string
