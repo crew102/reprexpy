@@ -193,6 +193,10 @@ def reprexpy2(x=None, infile=None, venue='gh', kernel_name='python3', outfile=No
     plot_txt_outputs = [_get_plot_output_txt(outputs[i[1]], client) for i in start_stops]
 
     all_chunks_fin = [i + j for i, j in zip(code_blocks, plot_txt_outputs)]
+
+    if venue == 'gh' and si:
+        all_chunks_fin[-1] = '<details><summary>Session info</summary>\n\n' + all_chunks_fin[-1] + '\n\n</details>'
+
     out = '\n\n'.join(all_chunks_fin)
 
     if venue == 'so':
