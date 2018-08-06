@@ -223,7 +223,7 @@ def reprexpy2(x=None, infile=None, venue='gh', kernel_name=None,
     out = '\n\n'.join(all_chunks_fin)
 
     if venue == 'so':
-        out = '# <!-- language-all: lang-py -->\n' + out
+        out = '# <!-- language-all: lang-py -->\n\n' + out
 
     try:
         pyperclip.copy(out)
