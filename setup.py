@@ -23,4 +23,9 @@ setup(
         'jupyter',
         'setuptools'
     ],
+    tests_require=[
+        'pytest',
+        'pandas'
+    ],
+    setup_requires=["pytest-runner"]
 )

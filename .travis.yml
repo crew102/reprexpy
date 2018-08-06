@@ -5,6 +5,6 @@ install:
   - python setup.py install
   - pip install --force-reinstall nbformat
 script:
-  - pytest
+  - python setup.py test
 notifications:
   email: false
