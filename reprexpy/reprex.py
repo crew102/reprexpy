@@ -1,5 +1,6 @@
 import re
 import warnings
+import datetime
 
 import asttokens
 import nbconvert
@@ -150,10 +151,17 @@ def _get_plot_output_txt(one_out, client):
         return ""
 
 
+def _get_advertisement():
+    now = datetime.datetime.now()
+    date = now.strftime("%Y-%m-%d")
+    return 'Created on ' + date + ' by the [reprexpy package](https://github.com/crew102/reprexpy)'
+
+
 # reprexpy() dev ---------------------------
 
 
-def reprexpy2(x=None, infile=None, venue='gh', kernel_name='python3', outfile=None, si=True, comment='#>'):
+def reprexpy2(x=None, infile=None, venue='gh', kernel_name='python3', outfile=None,
+              comment='#>', si=True, advertise=True):
 
     # get code input string
     if x is not None:
@@ -196,6 +204,12 @@ def reprexpy2(x=None, infile=None, venue='gh', kernel_name='python3', outfile=No
 
     if venue == 'gh' and si:
         all_chunks_fin[-1] = '<details><summary>Session info</summary>\n\n' + all_chunks_fin[-1] + '\n\n</details>'
+
+    if advertise:
+        if si:
+            all_chunks_fin[-1] = _get_advertisement() + '\n\n' + all_chunks_fin[-1]
+        else:
+            all_chunks_fin[-1] = all_chunks_fin[-1] + '\n\n' + _get_advertisement()
 
     out = '\n\n'.join(all_chunks_fin)
 
