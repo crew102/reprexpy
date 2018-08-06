@@ -21,6 +21,8 @@ setup(
         'pyimgur',
         'jupyter_client',
         'jupyter',
-        'pytest'
+        'setuptools'
     ],
+    tests_require=['pytest'],
+    setup_requires=["pytest-runner"]
 )

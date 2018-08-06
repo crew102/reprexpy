@@ -1,22 +1,86 @@
-import pytest
-import nbformat
-from reprexpy.reprex import _get_statement_chunks, _run_nb
+import textwrap
+import re
+import os.path
+
+import pyperclip
+
+from reprexpy.reprex import reprexpy2
 
 
-def read_ex_fi(file):
+def _read_ex_fi(file):
     with open(file) as fi:
-        return fi.read()
+        lns = fi.read()
+        return lns.rstrip('\n')
 
 
-def test_statement_parser():
-    code_str = read_ex_fi("test-examples/basic-example.py")
-    s_chunks = _get_statement_chunks(code_str)
-    assert len(s_chunks) == 21
+def _read_ex_fi_pair(pref):
+    x = os.path.join("tests", "reprexes", pref)
+    return [_read_ex_fi(x + i) for i in [".py", ".md"]]
 
 
-# todo: refactor this so _get_statement_chunks isn't tested twice
-def test_nb_exe():
-    code_str = read_ex_fi("test-examples/basic-example.py")
-    s_chunks = _get_statement_chunks(code_str)
-    out = _run_nb(s_chunks, "python3")
-    assert isinstance(out, type(nbformat.v4.new_notebook()))
+def _ptxt(txt):
+    dind = textwrap.dedent(txt)
+    return dind.strip('\n')
+
+
+def _all_match(out, mlst):
+    lns = out.splitlines()
+    test = [any([re.search(rgx, line) for line in lns]) for rgx in mlst]
+    for rgx, j in zip(mlst, test):
+        assert j, "%r not found in output" % rgx
+
+
+def _reprexpy_basic(*args, **kargs):
+    return reprexpy2(*args, **kargs, si=False, advertise=False)
+
+
+def test_spliting_txt_output():
+    ex = _read_ex_fi_pair("txt-outputs")
+    out = _reprexpy_basic(ex[0])
+    assert out == ex[1]
+
+
+def test_two_statements_per_line():
+    ex = _read_ex_fi_pair("two-statements-per-line")
+    out = _reprexpy_basic(ex[0])
+    assert out == ex[1]
+
+
+def test_plot_outputs():
+    ex = _read_ex_fi("tests/reprexes/plot-output.py")
+    out = _reprexpy_basic(ex)
+    assert len(re.findall("https://i.imgur.com", out)) == 3
+
+
+def test_exception_handling():
+    out = _reprexpy_basic("10 / 0")
+    _all_match(out, "ZeroDivisionError")
+
+
+def test_input_types():
+    ex = _read_ex_fi("tests/reprexes/txt-outputs.py")
+    out_x = _reprexpy_basic(ex)
+    out_infile = _reprexpy_basic(infile="tests/reprexes/txt-outputs.py")
+    pyperclip.copy(ex)
+    out_clip = _reprexpy_basic()
+    assert len(set([out_x, out_infile, out_clip])) == 1
+
+
+def test_output_to_clipboard():
+    _reprexpy_basic('x = "hi there"; print(x)')
+    assert pyperclip.paste() == '```python\nx = "hi there"; print(x)\n#> hi there\n```'
+
+
+def test_misc_params():
+    code = """
+    import re
+    import os.path
+    import pyperclip
+    import asttokens as ast
+
+    var = "some var"
+    var
+    """
+    out = reprexpy2(_ptxt(code), venue='so', comment='#<>', si=True, advertise=True)
+    mlst = ['    var = "some var"', '#<>', 'pyperclip: [0-9]', 'Created on.*by the \[reprexpy package\]']
+    _all_match(out, mlst)
