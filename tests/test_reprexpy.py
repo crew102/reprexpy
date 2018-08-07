@@ -38,7 +38,7 @@ def _all_match(out, mlst):
 
 
 def _reprexpy_basic(*args, **kargs):
-    return reprexpy(*args, **kargs, si=False, advertise=False)
+    return reprexpy(si=False, advertise=False, *args, **kargs)
 
 
 def test_spliting_txt_output():
