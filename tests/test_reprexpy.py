@@ -1,10 +1,17 @@
 import textwrap
 import re
+import os
 import os.path
 
 import pyperclip
+import pytest
 
 from reprexpy.reprex import reprexpy2
+
+skip_on_travis = pytest.mark.skipif(
+    "TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+    reason="Skipping this test on Travis CI."
+)
 
 
 def _read_ex_fi(file):
@@ -57,6 +64,7 @@ def test_exception_handling():
     _all_match(out, "ZeroDivisionError")
 
 
+@skip_on_travis
 def test_input_types():
     ex = _read_ex_fi("tests/reprexes/txt-outputs.py")
     out_x = _reprexpy_basic(ex)
@@ -66,6 +74,7 @@ def test_input_types():
     assert len(set([out_x, out_infile, out_clip])) == 1
 
 
+@skip_on_travis
 def test_output_to_clipboard():
     _reprexpy_basic('x = "hi there"; print(x)')
     assert pyperclip.paste() == '```python\nx = "hi there"; print(x)\n#> hi there\n```'
