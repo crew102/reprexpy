@@ -6,7 +6,7 @@ import os.path
 import pyperclip
 import pytest
 
-from reprexpy.reprex import reprexpy2
+from reprexpy import reprexpy
 
 skip_on_travis = pytest.mark.skipif(
     "TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
@@ -38,7 +38,7 @@ def _all_match(out, mlst):
 
 
 def _reprexpy_basic(*args, **kargs):
-    return reprexpy2(*args, **kargs, si=False, advertise=False)
+    return reprexpy(*args, **kargs, si=False, advertise=False)
 
 
 def test_spliting_txt_output():
@@ -90,6 +90,6 @@ def test_misc_params():
     var = "some var"
     var
     """
-    out = reprexpy2(_ptxt(code), venue='so', comment='#<>', si=True, advertise=True)
+    out = reprexpy(_ptxt(code), venue='so', comment='#<>', si=True, advertise=True)
     mlst = ['    var = "some var"', '#<>', 'pyperclip: [0-9]', 'Created on.*by the \[reprexpy package\]']
     _all_match(out, mlst)

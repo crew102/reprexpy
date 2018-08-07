@@ -163,8 +163,8 @@ def _get_advertisement():
 # reprexpy() dev ---------------------------
 
 
-def reprexpy2(x=None, infile=None, venue='gh', kernel_name=None,
-              comment='#>', si=True, advertise=True):
+def reprexpy(x=None, infile=None, venue='gh', kernel_name=None,
+             comment='#>', si=True, advertise=True):
 
     # get code input string
     if x is not None:
@@ -231,6 +231,3 @@ def reprexpy2(x=None, infile=None, venue='gh', kernel_name=None,
         warnings.warn("Could not copy rendered reprex to the clipboard.")
 
     return out
-
-def some_fun():
-    print("hi there")
