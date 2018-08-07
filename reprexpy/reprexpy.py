@@ -226,7 +226,7 @@ def reprexpy(x=None, infile=None, venue='gh', kernel_name=None,
         out = '# <!-- language-all: lang-py -->\n\n' + out
 
     try:
-        pyperclip.copy(out)
+        pyperclip.copy(out.encode('utf8'))
     except:
         warnings.warn("Could not copy rendered reprex to the clipboard.")
 
