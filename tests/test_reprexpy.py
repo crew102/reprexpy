@@ -77,19 +77,30 @@ def test_input_types():
 @skip_on_travis
 def test_output_to_clipboard():
     _reprexpy_basic('x = "hi there"; print(x)')
-    assert pyperclip.paste() == '```python\nx = "hi there"; print(x)\n#> hi there\n```'
+    assert pyperclip.paste() == '```python\nx = "hi there"; ' \
+                                'print(x)\n#> hi there\n```'
 
 
 def test_misc_params():
     code = """
-    import re
-    import os.path
+    import re, os.path
     import pyperclip
     import asttokens as ast
+    from pkg_resources import register_finder, register_loader_type
+    
+    def some_fun():
+        import nbconvert
+        
+    some_fun()
 
     var = "some var"
     var
     """
-    out = reprexpy(_ptxt(code), venue='so', comment='#<>', si=True, advertise=True)
-    mlst = ['    var = "some var"', '#<>', 'pyperclip: [0-9]', 'Created on.*by the \[reprexpy package\]']
+    out = reprexpy(
+        _ptxt(code), venue='so', comment='#<>', si=True, advertise=True
+    )
+    mlst = [
+        '    var = "some var"', '#<>', 'pyperclip: [0-9]',
+        'Created on.*by the \[reprexpy package\]'
+    ]
     _all_match(out, mlst)
