@@ -100,7 +100,7 @@ def test_misc_params():
         _ptxt(code), venue='so', comment='#<>', si=True, advertise=True
     )
     mlst = [
-        '    var = "some var"', '#<>', 'pyperclip: [0-9]',
+        '    var = "some var"', '#<>', 'pyperclip==',
         'Created on.*by the \[reprexpy package\]'
     ]
     _all_match(out, mlst)
