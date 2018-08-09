@@ -35,14 +35,20 @@ def _get_statement_chunks(code_str, si):
     return schunks
 
 
-def _run_nb(statement_chunks, kernel_name):
+def _get_setup_code():
+    magic_one = "%matplotlib inline"
     # save env var so SessionInfo can filter out import statements as needed
     env = "import os; os.environ['REPREX_RUNNING'] = 'true'"
     # set up settings for displaying plot outputs
     p1 = "import IPython.display; IPython.display.set_matplotlib_close(False)"
-    p2 = "import matplotlib.pyplot; matplotlib.pyplot.ioff()"
-    setup_code = '; '.join([env, p1, p2])
-    statement_chunks = [[setup_code]] + statement_chunks
+    p2 = "import matplotlib.pyplot; matplotlib.pyplot.ioff();"
+    python_statements = '; '.join([env, p1, p2])
+    return [[magic_one]] + [[python_statements]]
+
+
+def _run_nb(statement_chunks, kernel_name):
+    scode = _get_setup_code()
+    statement_chunks = scode + statement_chunks
 
     nb = nbformat.v4.new_notebook()
     nb["cells"] = [
@@ -63,12 +69,7 @@ def _run_nb(statement_chunks, kernel_name):
 
 def _extract_outputs(cells):
     all_outputs = [[] if not i["outputs"] else i["outputs"] for i in cells]
-    if all_outputs[0]:
-        if all_outputs[0].output_type == "error":
-            warnings.warn(
-                "reprexpy encountered a problem when running setup code"
-            )
-    return all_outputs[1:]
+    return all_outputs[len(_get_setup_code()):]
 
 
 # helper used in _get_code_block_start_stops
