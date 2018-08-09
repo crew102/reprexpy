@@ -64,8 +64,7 @@ def _warn_if_prep_err(lst):
     if lst:
         if lst[0].output_type == "error":
             warnings.warn(
-                "reprexpy encountered a problem when trying to import"
-                " matplotlib"
+                "reprexpy encountered a problem when trying to import matplotlib"
             )
 
 
