@@ -37,8 +37,8 @@ def _get_statement_chunks(code_str, si):
 
 def _run_nb(statement_chunks, kernel_name):
     statement_chunks = [
-      # store plot outputs inline
-      ["%matplotlib inline"],
+      # save env var so SessionInfo can filter out import statements as needed
+      ["import os; os.environ['REPREX_RUNNING'] = 'true'"],
       ["import IPython.display; IPython.display.set_matplotlib_close(False)"],
       # interactive backend
       ["import matplotlib; import matplotlib.pyplot; matplotlib.pyplot.ioff()"]
