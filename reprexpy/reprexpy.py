@@ -36,13 +36,14 @@ def _get_statement_chunks(code_str, si):
 
 
 def _run_nb(statement_chunks, kernel_name):
-    statement_chunks = [
-      # save env var so SessionInfo can filter out import statements as needed
-      ["import os; os.environ['REPREX_RUNNING'] = 'true'"],
-      ["import IPython.display; IPython.display.set_matplotlib_close(False)"],
-      # interactive backend
-      ["import matplotlib; import matplotlib.pyplot; matplotlib.pyplot.ioff()"]
-    ] + statement_chunks
+    # save env var so SessionInfo can filter out import statements as needed
+    env = "import os; os.environ['REPREX_RUNNING'] = 'true'"
+    # set up settings for displaying plot outputs
+    p1 = "import IPython.display; IPython.display.set_matplotlib_close(False)"
+    p2 = "import matplotlib.pyplot; matplotlib.pyplot.ioff()"
+    setup_code = '; '.join([env, p1, p2])
+    statement_chunks = [[setup_code]] + statement_chunks
+
     nb = nbformat.v4.new_notebook()
     nb["cells"] = [
         nbformat.v4.new_code_cell("\n".join(i))
@@ -60,18 +61,14 @@ def _run_nb(statement_chunks, kernel_name):
     return node_out
 
 
-def _warn_if_prep_err(lst):
-    if lst:
-        if lst[0].output_type == "error":
-            warnings.warn(
-                "reprexpy encountered a problem when trying to import matplotlib"
-            )
-
-
 def _extract_outputs(cells):
     all_outputs = [[] if not i["outputs"] else i["outputs"] for i in cells]
-    [_warn_if_prep_err(i) for i in all_outputs[0:3]]
-    return all_outputs[3:]
+    if all_outputs[0]:
+        if all_outputs[0].output_type == "error":
+            warnings.warn(
+                "reprexpy encountered a problem when running setup code"
+            )
+    return all_outputs[1:]
 
 
 # helper used in _get_code_block_start_stops
