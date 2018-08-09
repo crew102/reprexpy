@@ -6,3 +6,4 @@ dist/
 reprexpy.egg-info/
 venv/
 .cache/
+*.pyc
