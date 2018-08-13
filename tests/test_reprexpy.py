@@ -30,11 +30,9 @@ def _ptxt(txt):
     return dind.strip('\n')
 
 
-def _all_match(out, mlst):
+def _all_match(out, regex_lst):
     lns = out.splitlines()
-    test = [any([re.search(rgx, line) for line in lns]) for rgx in mlst]
-    for rgx, j in zip(mlst, test):
-        assert j, "%r not found in output" % rgx
+    return [any([re.search(rgx, line) for line in lns]) for rgx in regex_lst]
 
 
 def _reprexpy_basic(*args, **kargs):
@@ -61,7 +59,8 @@ def test_plot_outputs():
 
 def test_exception_handling():
     out = _reprexpy_basic("10 / 0")
-    _all_match(out, "ZeroDivisionError")
+    one_t = _all_match(out, ["ZeroDivisionError"])
+    assert one_t[0], "ZeroDivisionError not found in output"
 
 
 @skip_on_travis
@@ -83,24 +82,17 @@ def test_output_to_clipboard():
 
 def test_misc_params():
     code = """
-    import re, os.path
-    import pyperclip
-    import asttokens as ast
-    from pkg_resources import register_finder, register_loader_type
-    
-    def some_fun():
-        import nbconvert
-        
-    some_fun()
-
     var = "some var"
     var
     """
     out = reprexpy(
-        _ptxt(code), venue='so', comment='#<>', si=True, advertise=True
+        _ptxt(code), venue='so', comment='#<>', advertise=True
     )
     mlst = [
-        '    var = "some var"', '#<>', 'pyperclip==',
+        '    var = "some var"', '#<>',
         'Created on.*by the \[reprexpy package\]'
     ]
-    _all_match(out, mlst)
+    mout = _all_match(out, mlst)
+    for i, j in zip(mout, mlst):
+        assert i, '%r not found in output' % j
+
