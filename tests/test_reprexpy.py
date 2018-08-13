@@ -101,8 +101,7 @@ def test_si_imports():
     x = _read_ex_fi("tests/reprexes/imports.py")
     out = reprexpy(x=x)
     x_in = [
-        'nbconvert', 'asttokens', 'pyimgur', 'stdlib-list',
-        'ipython', 'terminado', 'pyzmq'
+        'nbconvert', 'asttokens', 'pyimgur', 'stdlib-list', 'ipython', 'pyzmq'
     ]
     x_in = [i + "==" for i in x_in]
 

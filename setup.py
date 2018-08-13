@@ -22,6 +22,6 @@ setup(
     classifiers=[],
     packages=['reprexpy'],
     install_requires=install_requires,
-    tests_require=['pytest', 'terminado', 'pyzmq', 'pickledb'],
+    tests_require=['pytest', 'pyzmq', 'pickledb'],
     setup_requires=["pytest-runner"]
 )
