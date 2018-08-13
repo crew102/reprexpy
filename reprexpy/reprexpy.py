@@ -143,7 +143,10 @@ def _get_one_txt_output(output_el, comment):
         # traceback per element. we need to remove ansi color codes from
         # traceback text and split any elements in list that are actually two
         # lines, then finally concat lists.
-        txt = [re.sub('\x1b\\[(.*?)([@-~])', '', i) for i in output_el["traceback"]]
+        txt = [
+            re.sub('\x1b\\[(.*?)([@-~])', '', i)
+            for i in output_el["traceback"]
+        ]
         txt = [i.splitlines() for i in txt]
         txt = [x for i in txt for x in i]
     elif output_el.output_type == "display_data":
