@@ -19,10 +19,9 @@ setup(
         'matplotlib',
         'IPython',
         'pyimgur',
-        'jupyter_client', # drop this dep?
-        'jupyter', # drop this dep?
         'setuptools',
-        'stdlib-list'
+        'stdlib-list',
+        'jupyter'
     ],
     tests_require=['pytest', 'terminado', 'pyzmq', 'pickledb'],
     setup_requires=["pytest-runner"]
