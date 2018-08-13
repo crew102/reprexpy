@@ -1,4 +1,14 @@
+import sys
+
 from setuptools import setup
+
+install_requires = [
+    'pyperclip', 'asttokens', 'nbconvert', 'nbformat', 'matplotlib', 'ipython',
+    'pyimgur', 'setuptools', 'stdlib-list', 'jupyter'
+]
+if sys.version_info[0] == 2:
+    install_requires.remove('ipython')
+    install_requires.append('ipython<6')
 
 setup(
     name='reprexpy',
@@ -11,18 +21,7 @@ setup(
     license='LICENSE.txt',
     classifiers=[],
     packages=['reprexpy'],
-    install_requires=[
-        'pyperclip',
-        'asttokens',
-        'nbconvert',
-        'nbformat',
-        'matplotlib',
-        'IPython',
-        'pyimgur',
-        'setuptools',
-        'stdlib-list',
-        'jupyter'
-    ],
+    install_requires=install_requires,
     tests_require=['pytest', 'terminado', 'pyzmq', 'pickledb'],
     setup_requires=["pytest-runner"]
 )
