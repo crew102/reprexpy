@@ -2,6 +2,7 @@ import platform
 import sys
 import datetime
 import os
+import re
 
 import IPython.core.getipython
 import asttokens
@@ -58,8 +59,14 @@ class SessionInfo:
         ip_inst = IPython.core.getipython.get_ipython()
         assert ip_inst, "SessionInfo() doesn't work outside of IPython"
         code = ip_inst.user_ns["In"]
+        # drop setup code if a reprex is running
         if os.environ.get('REPREX_RUNNING'):
-            code = code[1:]
+            x = [
+                i
+                for i, j in enumerate(code) if re.search('REPREX_RUNNING', j)
+            ]
+            if x:
+                code = code[(x[0] + 1):]
         scode = '\n'.join(code)
         tokes = asttokens.ASTTokens(scode, parse=True)
 

@@ -96,3 +96,28 @@ def test_misc_params():
     for i, j in zip(mout, mlst):
         assert i, '%r not found in output' % j
 
+
+def test_si_imports():
+    x = _read_ex_fi("tests/reprexes/imports.py")
+    out = reprexpy(x=x)
+    x_in = [
+        'nbconvert', 'asttokens', 'pyimgur', 'stdlib-list',
+        'ipython', 'terminado', 'pyzmq'
+    ]
+    x_in = [i + "==" for i in x_in]
+
+    mout = _all_match(out, x_in)
+    for i, j in zip(mout, x_in):
+        assert i, '%r not found in output' % j
+
+
+def test_si_non_imports():
+
+    x = _read_ex_fi("tests/reprexes/non-imports.py")
+    out = reprexpy(x=x)
+    not_in_x = ['pickledb', 'matplotlib', 'ipython']
+    not_in_x = [i + "==" for i in not_in_x]
+
+    mout = _all_match(out, not_in_x)
+    for i, j in zip(mout, not_in_x):
+        assert not i, '%r found in session info' % j
