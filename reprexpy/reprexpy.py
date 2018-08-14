@@ -240,20 +240,18 @@ def reprexpy(x=None, infile=None, venue='gh', kernel_name=None,
         _get_plot_output_txt(outputs[i[1]], client)
         for i in start_stops
     ]
-    all_chunks_fin = [i + j for i, j in zip(code_blocks, plot_txt_outputs)]
+    fin_chunks = [i + j for i, j in zip(code_blocks, plot_txt_outputs)]
 
     if venue == 'gh' and si:
-        all_chunks_fin[-1] = '<details><summary>Session info</summary>\n\n' + \
-                             all_chunks_fin[-1] + '\n\n</details>'
+        fin_chunks[-1] = '<details><summary>Session info</summary>\n\n' + \
+                         fin_chunks[-1] + '\n\n</details>'
     if advertise:
         if si:
-            all_chunks_fin[-1] = _get_advertisement() + '\n\n' + \
-                                 all_chunks_fin[-1]
+            fin_chunks[-1] = _get_advertisement() + '\n\n' + fin_chunks[-1]
         else:
-            all_chunks_fin[-1] = all_chunks_fin[-1] + '\n\n' + \
-                                 _get_advertisement()
+            fin_chunks[-1] = fin_chunks[-1] + '\n\n' + _get_advertisement()
 
-    out = '\n\n'.join(all_chunks_fin)
+    out = '\n\n'.join(fin_chunks)
     if venue == 'so':
         out = '# <!-- language-all: lang-py -->\n\n' + out
 
