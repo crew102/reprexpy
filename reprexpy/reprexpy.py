@@ -1,5 +1,4 @@
 import re
-import warnings
 import datetime
 
 import asttokens
@@ -209,14 +208,14 @@ def reprexpy(x=None, infile=None, venue='gh', kernel_name=None,
     else:
         try:
             code_str = pyperclip.paste()
-        # todo: modify pyperclip exeption here and re-raise it
-        except:
-            print(
+        except pyperclip.PyperclipException:
+            raise Exception(
                 "Could not retrieve code from the clipboard. "
                 "Try putting your code in a file and using "
-                "the `infile` parameter instead of the clipboard."
+                "the `infile` parameter instead of using the clipboard."
             )
 
+    print("Rendering reprex...")
     statement_chunks = _get_statement_chunks(code_str, si=si)
     node_out = _run_nb(statement_chunks, kernel_name)
     outputs = _extract_outputs(node_out.cells)
@@ -260,7 +259,9 @@ def reprexpy(x=None, infile=None, venue='gh', kernel_name=None,
 
     try:
         pyperclip.copy(out.encode('utf8'))
-    except:
-        warnings.warn("Could not copy rendered reprex to the clipboard.")
+    except RuntimeError:
+        print("Could not copy rendered reprex to the clipboard.\n")
+    else:
+        print("Rendered reprex is on the clipboard.\n")
 
     return out
