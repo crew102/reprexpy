@@ -67,7 +67,7 @@ def test_exception_handling():
 def test_input_types():
     ex = _read_ex_fi("tests/reprexes/txt-outputs.py")
     out_x = _reprexpy_basic(ex)
-    out_infile = _reprexpy_basic(infile="tests/reprexes/txt-outputs.py")
+    out_infile = _reprexpy_basic(code_file="tests/reprexes/txt-outputs.py")
     pyperclip.copy(ex)
     out_clip = _reprexpy_basic()
     assert len(set([out_x, out_infile, out_clip])) == 1
@@ -99,7 +99,7 @@ def test_misc_params():
 
 def test_si_imports():
     x = _read_ex_fi("tests/reprexes/imports.py")
-    out = reprexpy(x=x)
+    out = reprexpy(code=x)
     x_in = [
         'nbconvert', 'asttokens', 'pyimgur', 'stdlib-list', 'ipython', 'pyzmq'
     ]
@@ -113,7 +113,7 @@ def test_si_imports():
 def test_si_non_imports():
 
     x = _read_ex_fi("tests/reprexes/non-imports.py")
-    out = reprexpy(x=x)
+    out = reprexpy(code=x)
     not_in_x = ['pickledb', 'matplotlib', 'ipython']
     not_in_x = [i + "==" for i in not_in_x]
 

@@ -196,14 +196,14 @@ def _get_advertisement():
 # reprexpy() ---------------------------
 
 
-def reprexpy(x=None, infile=None, venue='gh', kernel_name=None,
+def reprexpy(code=None, code_file=None, venue='gh', kernel_name=None,
              comment='#>', si=True, advertise=True):
 
     # get source code string
-    if x is not None:
-        code_str = x
-    elif infile is not None:
-        with open(infile) as fi:
+    if code is not None:
+        code_str = code
+    elif code_file is not None:
+        with open(code_file) as fi:
             code_str = fi.read()
     else:
         try:
@@ -212,7 +212,7 @@ def reprexpy(x=None, infile=None, venue='gh', kernel_name=None,
             raise Exception(
                 "Could not retrieve code from the clipboard. "
                 "Try putting your code in a file and using "
-                "the `infile` parameter instead of using the clipboard."
+                "the `code_file` parameter instead of using the clipboard."
             )
 
     print("Rendering reprex...")
