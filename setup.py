@@ -23,5 +23,8 @@ setup(
     packages=['reprexpy'],
     install_requires=install_requires,
     tests_require=['pytest', 'pyzmq', 'pickledb'],
-    setup_requires=["pytest-runner"]
+    setup_requires=["pytest-runner"],
+    package_data={
+        'reprexpy': ['examples/*.py'],
+    }
 )

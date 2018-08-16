@@ -1,11 +1,13 @@
 import re
 import datetime
+import os.path
 
 import asttokens
 import nbconvert
 import nbformat
 import pyperclip
 import pyimgur
+import pkg_resources
 
 
 # Helper functions for reprex() ---------------------------
@@ -192,6 +194,12 @@ def _get_advertisement():
     date = now.strftime("%Y-%m-%d")
     return 'Created on ' + date + \
            ' by the [reprexpy package](https://github.com/crew102/reprexpy)'
+
+
+def reprex_ex(file):
+    return pkg_resources.resource_filename(
+        "reprexpy", os.path.join("examples", file)
+    )
 
 
 # reprex() ---------------------------
