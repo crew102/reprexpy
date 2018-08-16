@@ -168,6 +168,7 @@ def _get_cell_txt_outputs(outputs, comment):
 
 def _proc_one_display_data_node(node, client):
     data = node["data"]["image/png"].encode()
+    # todo: don't use protected member here
     req = client._send_request(
         'https://api.imgur.com/3/image', method='POST', params={'image': data}
     )
@@ -198,6 +199,46 @@ def _get_advertisement():
 
 def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
            comment='#>', si=True, advertise=True):
+    r"""Render a reproducible example of code (a reprex).
+
+    Run a reprex inside a fresh IPython session and return the results in a
+    format suitable for sharing. Your reprex code can come from one of three
+    places:
+
+    1. **The clipboard** (the default). Code for the reprex will be taken from
+       the clipboard if you leave ``code=None`` and ``code_file=None``.
+    2. **A string.** Use the ``code`` parameter to pass in a string of code.
+    3. **A file.** Use the ``code_file`` parameter to specify a file containing
+       reprex code.
+
+    Parameters
+    ----------
+    code : str, optional
+        The code that makes up your reprex (e.g.,
+        ``'x = "hi there"\nprint(x)'``).
+    code_file : str, optional
+        Path to the file that contains your reprex.
+    venue : {'gh', 'so'}, optional
+        The venue that your reprex is bound for. Choose 'gh' if your reprex
+        will be posted to GitHub or 'so' if it's bound for Stack Overflow.
+    kernel_name : str, optional
+        The name of the IPython kernel that you want to use to execute your
+        reprex. Choosing ``kernel_name=None`` (the default) means you want to
+        use the default kernel. See the IPython docs `kernels for
+        different environments
+        <https://ipython.readthedocs.io/en/stable/install/kernel_install.html#kernels-for-different-environments>`_
+        for details on how to create/use a custom kernel.
+    comment : str, optional
+        String that should be used to comment out your code's output.
+    si : bool, optional
+        Do you want to display your IPython kernel's session info at the end of
+        the reprex? See :py:class:`reprexpy.session_info.SessionInfo` for
+        details on session info.
+    advertise : bool, optional
+        Do you want to include a note at the bottom of your reprex that says
+        that it was produced by the reprexpy package?
+
+    """
 
     # get source code string
     if code is not None:

@@ -6,7 +6,7 @@ import os.path
 import pyperclip
 import pytest
 
-from reprexpy import reprex
+from reprexpy.reprex import reprex
 
 skip_on_travis = pytest.mark.skipif(
     "TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",

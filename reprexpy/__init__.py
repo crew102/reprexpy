@@ -1,2 +1,2 @@
-from .reprexpy import reprex
+from .reprex import reprex
 from .session_info import SessionInfo
