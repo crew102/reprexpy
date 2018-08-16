@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=source
 set BUILDDIR=build
-set SPHINXPROJ=reprex
+set SPHINXPROJ=reprexpy
 
 if "%1" == "" goto help
 
