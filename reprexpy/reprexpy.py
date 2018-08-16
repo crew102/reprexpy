@@ -8,7 +8,7 @@ import pyperclip
 import pyimgur
 
 
-# Helper functions for reprexpy() ---------------------------
+# Helper functions for reprex() ---------------------------
 
 
 # a "statement chunk" includes all lines (including comments/empty lines) that
@@ -193,11 +193,11 @@ def _get_advertisement():
            ' by the [reprexpy package](https://github.com/crew102/reprexpy)'
 
 
-# reprexpy() ---------------------------
+# reprex() ---------------------------
 
 
-def reprexpy(code=None, code_file=None, venue='gh', kernel_name=None,
-             comment='#>', si=True, advertise=True):
+def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
+           comment='#>', si=True, advertise=True):
 
     # get source code string
     if code is not None:

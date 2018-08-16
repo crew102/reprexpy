@@ -6,7 +6,7 @@ import os.path
 import pyperclip
 import pytest
 
-from reprexpy import reprexpy
+from reprexpy import reprex
 
 skip_on_travis = pytest.mark.skipif(
     "TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
@@ -35,30 +35,30 @@ def _all_match(out, regex_lst):
     return [any([re.search(rgx, line) for line in lns]) for rgx in regex_lst]
 
 
-def _reprexpy_basic(*args, **kargs):
-    return reprexpy(si=False, advertise=False, *args, **kargs)
+def _reprex_basic(*args, **kargs):
+    return reprex(si=False, advertise=False, *args, **kargs)
 
 
 def test_spliting_txt_output():
     ex = _read_ex_fi_pair("txt-outputs")
-    out = _reprexpy_basic(ex[0])
+    out = _reprex_basic(ex[0])
     assert out == ex[1]
 
 
 def test_two_statements_per_line():
     ex = _read_ex_fi_pair("two-statements-per-line")
-    out = _reprexpy_basic(ex[0])
+    out = _reprex_basic(ex[0])
     assert out == ex[1]
 
 
 def test_plot_outputs():
     ex = _read_ex_fi("tests/reprexes/plot-output.py")
-    out = _reprexpy_basic(ex)
+    out = _reprex_basic(ex)
     assert len(re.findall("https://i.imgur.com", out)) == 3
 
 
 def test_exception_handling():
-    out = _reprexpy_basic("10 / 0")
+    out = _reprex_basic("10 / 0")
     one_t = _all_match(out, ["ZeroDivisionError"])
     assert one_t[0], "ZeroDivisionError not found in output"
 
@@ -66,16 +66,16 @@ def test_exception_handling():
 @skip_on_travis
 def test_input_types():
     ex = _read_ex_fi("tests/reprexes/txt-outputs.py")
-    out_x = _reprexpy_basic(ex)
-    out_infile = _reprexpy_basic(code_file="tests/reprexes/txt-outputs.py")
+    out_x = _reprex_basic(ex)
+    out_infile = _reprex_basic(code_file="tests/reprexes/txt-outputs.py")
     pyperclip.copy(ex)
-    out_clip = _reprexpy_basic()
+    out_clip = _reprex_basic()
     assert len(set([out_x, out_infile, out_clip])) == 1
 
 
 @skip_on_travis
 def test_output_to_clipboard():
-    _reprexpy_basic('x = "hi there"; print(x)')
+    _reprex_basic('x = "hi there"; print(x)')
     assert pyperclip.paste() == '```python\nx = "hi there"; ' \
                                 'print(x)\n#> hi there\n```'
 
@@ -85,9 +85,7 @@ def test_misc_params():
     var = "some var"
     var
     """
-    out = reprexpy(
-        _ptxt(code), venue='so', comment='#<>', advertise=True
-    )
+    out = reprex(_ptxt(code), venue='so', comment='#<>', advertise=True)
     mlst = [
         '    var = "some var"', '#<>',
         'Created on.*by the \[reprexpy package\]'
@@ -99,7 +97,7 @@ def test_misc_params():
 
 def test_si_imports():
     x = _read_ex_fi("tests/reprexes/imports.py")
-    out = reprexpy(code=x)
+    out = reprex(code=x)
     x_in = [
         'nbconvert', 'asttokens', 'pyimgur', 'stdlib-list', 'ipython', 'pyzmq'
     ]
@@ -113,7 +111,7 @@ def test_si_imports():
 def test_si_non_imports():
 
     x = _read_ex_fi("tests/reprexes/non-imports.py")
-    out = reprexpy(code=x)
+    out = reprex(code=x)
     not_in_x = ['pickledb', 'matplotlib', 'ipython']
     not_in_x = [i + "==" for i in not_in_x]
 
