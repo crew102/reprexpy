@@ -225,7 +225,7 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
         The code that makes up your reprex (e.g.,
         ``'x = "hi there"\nprint(x)'``).
     code_file : str, optional
-        Path to the file that contains your reprex.
+        Path to a file that contains your reprex.
     venue : {'gh', 'so'}, optional
         The venue that your reprex is bound for. Choose 'gh' if your reprex
         will be posted to GitHub or 'so' if it's bound for Stack Overflow.
@@ -245,6 +245,40 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     advertise : bool, optional
         Do you want to include a note at the bottom of your reprex that says
         that it was produced by the reprexpy package?
+
+    Returns
+    -------
+    str
+        A string containing your rendered reprex. The reprex is also copied to
+        the clipboard, if possible.
+
+    Examples
+    --------
+
+    Render a simple reprex for GitHub:
+
+    >>> import reprexpy
+    >>> code = 'x = "hi there"\ny = " old friend"\nprint(x + y)'
+    >>> print(reprexpy.reprex(code, si=False, advertise=False))
+    ```python
+    x = "hi there"
+    y = " old friend"
+    print(x + y)
+    #> hi there old friend
+    ```
+
+    Render same reprex, except pull the code from a file and use
+    Stack Overflow markdown instead of GitHub markdown (hence the leading
+    spaces in the rendered result):
+
+    >>> import reprexpy
+    >>> file = reprexpy.reprex_ex('basic-example.py')
+    >>> print(reprexpy.reprex(code_file=file, venue='so', si=False, advertise=False))
+    # <!-- language-all: lang-py -->
+        x = "hi there"
+        y = " old friend"
+        print(x + y)
+        #> hi there old friend
 
     """
 
