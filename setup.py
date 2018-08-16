@@ -19,7 +19,14 @@ setup(
     author_email='chriscrewbaker@gmail.com',
     url='https://github.com/crew102/reprexpy/issues',
     license='LICENSE.txt',
-    classifiers=[],
+    classifiers=[
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6'
+    ],
     packages=['reprexpy'],
     install_requires=install_requires,
     tests_require=['pytest', 'pyzmq', 'pickledb'],
