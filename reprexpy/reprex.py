@@ -200,6 +200,18 @@ def _get_advertisement():
 
 
 def reprex_ex(file):
+    r"""Get the path to an example reprex file
+
+    Parameters
+    ----------
+    file : {'basic-example.py', 'error.py', 'plotting.py'}
+        Name of the file whose path you want.
+
+    Returns
+    -------
+    str
+        A path to an example reprex file.
+    """
     return pkg_resources.resource_filename(
         "reprexpy", os.path.join("examples", file)
     )

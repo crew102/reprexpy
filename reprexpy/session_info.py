@@ -10,7 +10,74 @@ import stdlib_list
 import pkg_resources
 
 
+# goal: id distribution names + version numbers for all distributions that
+# include at least one module that the user has explicitly imported in their
+# script (including modules imported in the form `from module import object`),
+# excluding those modules that were either imported via a relative import or
+# those that are part of the python standard lib.
+#
+# we can't rely on just the global symbol table to see what modules are loaded
+# b/c we won't find the module name if the module is loaded in the form
+# `from module import object`. also, we can't just use sys.modules as our list
+# of loaded modules, b/c this list includes all loaded mods (including those
+# not loaded explicitly by the user).
+#
+# approach taken:
+# 1. get names of *most* imported modules (including packages) by parsing names
+# from code. the one case where we won't get the full module name is when
+# import happens in form `from module_a import module_b` (module_b won't be
+# added to our list of mods...instead, we will be relying on the module_a's
+# name to get us the name of the distribution that these mods belong to).
+# 2. ensure that the module's id'd in step 1 are actually loaded by cross
+# reffing mod names to sys.modules table. this will ensure that import
+# statements that don't actually get executed in users's code don't impact
+# final list...note, mods involved in import statements that don't actually
+# get run could still show up n sys.modules if they are loaded by another mod
+# that gets imported, so this won't be perfect.
+# 3. try to find the name and version of the distribution that a mod is in.
 class SessionInfo:
+    """Class responsible for gathering IPython session information.
+
+    A SessionInfo object provides basic information about a user's environment
+    so that they may easily communicate their environment to others (when, for
+    instance, posting a question on Stack Overflow). For example, it provides
+    info on what Python version you are using, as well as the version numbers
+    of packages that you have imported in your IPython session. **You must be
+    using the IPython kernel (e.g., in an IPython terminal or Jupyter Notebook)
+    to instantiate this class.**
+
+    Attributes
+    ----------
+    session_info : dict
+        The Python version IPython is using, the OS it's running on, and
+        today's date.
+    pkg_info : dict
+        The packages that the user has imported into their IPython environment,
+        excluding those packages that are part of the Python standard library
+        (e.g., ``re`` or ``os``). The names/keys of ``pkg_info`` refer to the
+        modules that ``SessionInfo()`` has found in your environment (roughly
+        speaking). The values in ``pkg_info`` are tuples that provide the
+        name of the distribution that the module is packaged in (i.e., the name
+        found on PyPI), as well as that distribution's version number. Printing
+        a ``SessionInfo()`` object prints these distribution names/versions
+        in the format that pip expects (e.g., in the requirements.txt format).
+
+    Examples
+    --------
+    >>> import asttokens
+    >>> import nbconvert.utils
+    >>> import reprexpy
+    >>> reprexpy.SessionInfo()
+    Session info --------------------------------------------------------------------
+    Python: 2.7
+    Platform: Windows-7-6.1.7601-SP1 (64-bit)
+    Date: 2018-08-17
+    Packages ------------------------------------------------------------------------
+    asttokens==1.1.11
+    nbconvert==5.3.1
+    reprexpy==0.1.0.dev0
+
+    """
 
     def __init__(self):
         self.session_info = self._get_sesh_info_sectn()
