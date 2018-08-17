@@ -170,11 +170,14 @@ def _get_cell_txt_outputs(outputs, comment):
 
 def _proc_one_display_data_node(node, client):
     data = node["data"]["image/png"].encode()
-    # todo: don't use protected member here
-    req = client._send_request(
-        'https://api.imgur.com/3/image', method='POST', params={'image': data}
+    authentication = {'Authorization': 'Client-ID ' + '14fb4fdc5c02a96'}
+    req_out = pyimgur.request.send_request(
+        'https://api.imgur.com/3/image',
+        params={'image': data},
+        method='POST',
+        authentication=authentication
     )
-    return "![](" + req["link"] + ")"
+    return "![](" + req_out[0]["link"] + ")"
 
 
 def _get_plot_output_txt(one_out, client):
