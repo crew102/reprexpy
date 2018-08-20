@@ -353,8 +353,11 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     if venue == 'so':
         out = '# <!-- language-all: lang-py -->\n\n' + out
 
+    if not isinstance(out, str):
+        out = out.encode('utf8')
+
     try:
-        pyperclip.copy(out.encode('utf8'))
+        pyperclip.copy(out)
     except RuntimeError:
         print("Could not copy rendered reprex to the clipboard.\n")
     else:
