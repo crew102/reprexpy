@@ -8,6 +8,7 @@ reprexpy
    :maxdepth: 2
    :caption: Contents:
 
+.. mdinclude:: faqs.md
 
 Indices and tables
 ------------------------------------
