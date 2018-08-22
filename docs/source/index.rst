@@ -2,7 +2,7 @@ reprexpy
 ====================================
 
 .. mdinclude:: ../../README.md
-   :start-line: 3
+   :start-line: 2
 
 .. toctree::
    :maxdepth: 2
