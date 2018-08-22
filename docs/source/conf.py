@@ -162,4 +162,6 @@ texinfo_documents = [
 ]
 
 
-# -- Extension configuration -------------------------------------------------
+# -- misc config -------------------------------------------------
+
+html_show_sourcelink = False

@@ -228,7 +228,7 @@ def reprex_ex(file):
 
 def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
            comment='#>', si=True, advertise=True):
-    r"""Render a reproducible example of code (a reprex).
+    r"""Render a reproducible example of Python code (a reprex).
 
     Run a reprex inside a fresh IPython session and return the results in a
     format suitable for sharing. Your reprex code can come from one of three

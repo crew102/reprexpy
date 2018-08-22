@@ -10,9 +10,8 @@ reprexpy
 
 .. mdinclude:: faqs.md
 
-Indices and tables
+Reference
 ------------------------------------
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+* :ref:`Modules <modindex>`
+* :ref:`Full index <genindex>`
