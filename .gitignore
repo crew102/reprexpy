@@ -7,3 +7,6 @@ reprexpy.egg-info/
 venv/
 .cache/
 *.pyc
+.eggs/
+dev.py
+TODO.md
