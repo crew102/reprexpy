@@ -150,6 +150,12 @@ def _get_one_txt_output(output_el, comment):
         ]
         txt = [i.splitlines() for i in txt]
         txt = [x for i in txt for x in i]
+        txt = [
+            "Traceback (most recent call last):" if
+            re.search("traceback .+most recent call last", i, re.IGNORECASE)
+            else i
+            for i in txt if re.search("[^-]", i)
+        ]
     elif output_el.output_type == "display_data":
         return None
     else:
