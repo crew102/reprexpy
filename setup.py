@@ -12,9 +12,9 @@ if sys.version_info[0] == 2:
 
 setup(
     name='reprexpy',
-    version='0.1.0dev',
     description='Render reproducible examples of code (port of R package `reprex`)',
     long_description='See https://github.com/crew102/reprexpy for details',
+    version='0.1.0.9000',
     author='Christopher Baker',
     author_email='chriscrewbaker@gmail.com',
     url='https://github.com/crew102/reprexpy/issues',
