@@ -174,7 +174,7 @@ def _get_cell_txt_outputs(outputs, comment):
     return [[x for i in one for x in i] for one in tmp_out]
 
 
-def _proc_one_display_data_node(node, client):
+def _proc_one_display_data_node(node):
     data = node["data"]["image/png"].encode()
     authentication = {'Authorization': 'Client-ID ' + '14fb4fdc5c02a96'}
     req_out = pyimgur.request.send_request(
@@ -186,10 +186,10 @@ def _proc_one_display_data_node(node, client):
     return "![](" + req_out[0]["link"] + ")"
 
 
-def _get_plot_output_txt(one_out, client):
+def _get_plot_output_txt(one_out):
     if _any_plot_outputs(one_out):
         ptxt_out = [
-            _proc_one_display_data_node(i, client)
+            _proc_one_display_data_node(i)
             for i in one_out if _is_plot_output(i)
         ]
         ptxt_out = '\n\n'.join(ptxt_out)
@@ -339,9 +339,8 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     if venue == 'gh':
         code_blocks = ["```python\n" + i + "\n```" for i in code_blocks]
 
-    client = pyimgur.Imgur("14fb4fdc5c02a96")
     plot_txt_outputs = [
-        _get_plot_output_txt(outputs[i[1]], client)
+        _get_plot_output_txt(outputs[i[1]])
         for i in start_stops
     ]
     fin_chunks = [i + j for i, j in zip(code_blocks, plot_txt_outputs)]
