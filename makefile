@@ -12,4 +12,3 @@ upload:
 	twine upload dist/*
 
 .PHONY: docs dist upload-test upload
-

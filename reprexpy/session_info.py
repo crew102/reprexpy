@@ -39,12 +39,11 @@ class SessionInfo:
     """Class responsible for gathering IPython session information.
 
     A SessionInfo object provides basic information about a user's environment
-    so that they may easily communicate their environment to others (when, for
-    instance, posting a question on Stack Overflow). For example, it provides
+    so that they may easily communicate their environment to others (e.g., when
+    posting a question on Stack Overflow). For example, it provides
     info on what Python version you are using, as well as the version numbers
-    of packages that you have imported in your IPython session. **You must be
-    using the IPython kernel (e.g., in an IPython terminal or Jupyter Notebook)
-    to instantiate this class.**
+    of packages that you have imported into your IPython session. **You must be
+    using the IPython kernel to instantiate this class.**
 
     Attributes
     ----------
@@ -69,13 +68,13 @@ class SessionInfo:
     >>> import reprexpy
     >>> reprexpy.SessionInfo()
     Session info --------------------------------------------------------------------
-    Python: 2.7
-    Platform: Windows-7-6.1.7601-SP1 (64-bit)
-    Date: 2018-08-17
+    Python: 3.6
+    Platform: Darwin-17.7.0-x86_64-i386-64bit (64-bit)
+    Date: 2018-08-27
     Packages ------------------------------------------------------------------------
     asttokens==1.1.11
     nbconvert==5.3.1
-    reprexpy==0.1.0.dev0
+    reprexpy==0.1.0
 
     """
 

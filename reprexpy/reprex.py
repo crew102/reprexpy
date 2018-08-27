@@ -231,14 +231,14 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     r"""Render a reproducible example of Python code (a reprex).
 
     Run a reprex inside a fresh IPython session and return the results in a
-    format suitable for sharing. Your reprex code can come from one of three
-    places:
+    format suitable for posting to either GitHub or Stack Overflow. The code
+    for your reprex can come from one of three places:
 
     1. **The clipboard** (the default). Code for the reprex will be taken from
        the clipboard if you leave ``code=None`` and ``code_file=None``.
     2. **A string.** Use the ``code`` parameter to pass in a string of code.
-    3. **A file.** Use the ``code_file`` parameter to specify a file containing
-       reprex code.
+    3. **A file.** Use the ``code_file`` parameter to specify a path to a file
+       containing reprex code.
 
     Parameters
     ----------
@@ -258,7 +258,7 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
         <https://ipython.readthedocs.io/en/stable/install/kernel_install.html#kernels-for-different-environments>`_
         for details on how to create/use a custom kernel.
     comment : str, optional
-        String that should be used to comment out your code's output.
+        String that should be used to comment out your code's outputs.
     si : bool, optional
         Do you want to display your IPython kernel's session info at the end of
         the reprex? See :py:class:`reprexpy.session_info.SessionInfo` for
@@ -270,8 +270,8 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     Returns
     -------
     str
-        A string containing your rendered reprex. The reprex is also copied to
-        the clipboard, if possible.
+        A string containing your rendered reprex. ``reprex()`` also tries to
+        copy the rendered reprex to the clipboard.
 
     Examples
     --------
@@ -293,8 +293,8 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     spaces in the rendered result):
 
     >>> import reprexpy
-    >>> file = reprexpy.reprex_ex('basic-example.py')
-    >>> print(reprexpy.reprex(code_file=file, venue='so', si=False, advertise=False))
+    >>> file_path = reprexpy.reprex_ex('basic-example.py')
+    >>> print(reprexpy.reprex(code_file=file_path, venue='so', si=False, advertise=False))
     # <!-- language-all: lang-py -->
         x = "hi there"
         y = " old friend"
