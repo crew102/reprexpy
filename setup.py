@@ -17,7 +17,7 @@ with open(path.join(this_directory, 'README.md')) as f:
 
 setup(
     name='reprexpy',
-    version='0.0.0.9000',
+    version='0.1.0',
     description='Render reproducible examples of Python code (port of R '
                 'package `reprex`)',
     long_description=long_description,
