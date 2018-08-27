@@ -17,14 +17,14 @@ with open(path.join(this_directory, 'README.md')) as f:
 
 setup(
     name='reprexpy',
-    version='0.1.0.9000',
+    version='0.0.0.9000',
     description='Render reproducible examples of Python code (port of R '
                 'package `reprex`)',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Christopher Baker',
     author_email='chriscrewbaker@gmail.com',
-    url='https://github.com/crew102/reprexpy/issues',
+    url='https://reprexpy.readthedocs.io/en/latest',
     license='LICENSE.txt',
     classifiers=[
         'Programming Language :: Python :: 2',
