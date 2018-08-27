@@ -43,7 +43,7 @@ print(df)
 #> 1     2     4
 ```
 
-**3. `reprex()` can't seem to access my clipboard on Linux. What can I do?**
+**4. reprex() can't seem to access my clipboard on Linux. What can I do?**
 
 You may need to install `xclip` or `xsel`. If you're using the Debian packaging system, you can try:
 
