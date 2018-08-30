@@ -98,7 +98,7 @@ from reprexpy import SessionInfo
 SessionInfo()
 #> Session info --------------------------------------------------------------------
 #> Date: 2018-08-27
-#> Darwin-17.7.0-x86_64-i386-64bit (64-bit)
+#> Platform: Darwin-17.7.0-x86_64-i386-64bit (64-bit)
 #> Python: 3.5
 #> Packages ------------------------------------------------------------------------
 #> numpy==1.15.0
