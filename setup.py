@@ -5,7 +5,7 @@ from setuptools import setup
 
 install_requires = [
     'pyperclip', 'asttokens', 'nbconvert', 'nbformat', 'matplotlib', 'ipython',
-    'pyimgur', 'setuptools', 'stdlib-list', 'jupyter'
+    'pyimgur', 'setuptools', 'stdlib-list', 'jupyter', 'ipykernel'
 ]
 
 is_v2 = sys.version_info[0] == 2
@@ -13,6 +13,8 @@ is_low_v3 = sys.version_info[0] == 3 and sys.version_info[1] <= 4
 if is_v2:
     install_requires.remove('ipython')
     install_requires.append('ipython<6')
+    install_requires.remove('ipykernel')
+    install_requires.append('ipykernel<4.9')
 
 if is_v2 or is_low_v3:
     install_requires.remove('matplotlib')
