@@ -201,8 +201,9 @@ def _get_plot_output_txt(one_out):
 def _get_advertisement():
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d")
-    return 'Created on ' + date + \
-           ' by the [reprexpy package](https://github.com/crew102/reprexpy)'
+    return '<sup>Created on ' + date + \
+           ' by the' \
+           ' [reprexpy package](https://github.com/crew102/reprexpy)</sup>'
 
 
 def reprex_ex(file):
