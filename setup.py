@@ -5,7 +5,7 @@ from setuptools import setup
 
 install_requires = [
     'pyperclip', 'asttokens', 'nbconvert', 'nbformat', 'matplotlib', 'ipython',
-    'pyimgur', 'setuptools', 'stdlib-list', 'jupyter', 'ipykernel'
+    'pyimgur', 'setuptools', 'stdlib-list', 'ipykernel'
 ]
 
 is_v2 = sys.version_info[0] == 2
