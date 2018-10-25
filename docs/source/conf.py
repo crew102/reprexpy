@@ -27,7 +27,6 @@ version = u''
 # The full version, including alpha/beta/rc tags
 release = u'0.2.0'
 
-
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
