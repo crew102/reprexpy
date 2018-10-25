@@ -87,7 +87,7 @@ You can prepare this reprex for posting to GitHub using `reprex()`:
 
 ## `SessionInfo()`
 
-You may have noticed in the previous two examples that a section called "Session info" is added to the end of your reprex by default. This section uses the `SessionInfo()` function to include details about the IPython kernel that was used to run your reprex, as well as what the version numbers are of any relevant third-party packages. Note that you can call `SessionInfo()` outside of reprexes, so long as you're using an IPython kernel (e.g., when inside an IPython terminal or Jupyter notebook):
+You may have noticed in the previous two examples that a section called "Session info" is added to the end of your reprex by default (note, this is no longer the case in version 0.1.2 and above). This section uses the `SessionInfo()` function to include details about the IPython kernel that was used to run your reprex, as well as what the version numbers are of any relevant third-party packages. Note that you can call `SessionInfo()` outside of reprexes, so long as you're using an IPython kernel (e.g., when inside an IPython terminal or Jupyter notebook):
 
 ```python
 import pandas

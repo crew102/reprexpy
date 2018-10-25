@@ -97,7 +97,7 @@ def test_misc_params():
 
 def test_si_imports():
     x = _read_ex_fi("tests/reprexes/imports.py")
-    out = reprex(code=x)
+    out = reprex(code=x, si=True)
     x_in = [
         'nbconvert', 'asttokens', 'pyimgur', 'stdlib-list', 'ipython', 'pyzmq'
     ]
@@ -111,7 +111,7 @@ def test_si_imports():
 def test_si_non_imports():
 
     x = _read_ex_fi("tests/reprexes/non-imports.py")
-    out = reprex(code=x)
+    out = reprex(code=x, si=True)
     not_in_x = ['pickledb', 'matplotlib', 'ipython']
     not_in_x = [i + "==" for i in not_in_x]
 

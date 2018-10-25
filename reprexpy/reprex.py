@@ -227,7 +227,7 @@ def reprex_ex(file):
 
 
 def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
-           comment='#>', si=True, advertise=True):
+           comment='#>', si=False, advertise=True):
     r"""Render a reproducible example of Python code (a reprex).
 
     Run a reprex inside a fresh IPython session and return the results in a
@@ -280,7 +280,7 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
 
     >>> import reprexpy
     >>> code = 'x = "hi there"\ny = " old friend"\nprint(x + y)'
-    >>> print(reprexpy.reprex(code, si=False, advertise=False))
+    >>> print(reprexpy.reprex(code, advertise=False))
     ```python
     x = "hi there"
     y = " old friend"
@@ -294,7 +294,7 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
 
     >>> import reprexpy
     >>> file_path = reprexpy.reprex_ex('basic-example.py')
-    >>> print(reprexpy.reprex(code_file=file_path, venue='so', si=False, advertise=False))
+    >>> print(reprexpy.reprex(code_file=file_path, venue='so', advertise=False))
     # <!-- language-all: lang-py -->
         x = "hi there"
         y = " old friend"
