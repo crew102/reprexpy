@@ -294,11 +294,7 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
 
     >>> import reprexpy
     >>> file_path = reprexpy.reprex_ex('basic-example.py')
-<<<<<<< HEAD
     >>> print(reprexpy.reprex(code_file=file_path, venue='so', advertise=False))
-=======
-    >>> print(reprexpy.reprex(code_file=file_path, venue='so', si=False, advertise=False))
->>>>>>> 4070fe73f197a63fb6c37c0481e6b39d6e371819
     # <!-- language-all: lang-py -->
         x = "hi there"
         y = " old friend"
