@@ -239,9 +239,9 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
            comment='#>', si=False, advertise=True):
     r"""Render a reproducible example of Python code (a reprex).
 
-    Run a reprex inside a fresh IPython session and return the results in a
-    format suitable for posting to either GitHub or Stack Overflow. The code
-    for your reprex can come from one of three places:
+    Runs Python code inside a fresh IPython session, captures the results, and
+    marks everything up using the appropriate markdown syntax (determined
+    by ``venue``). The code for your reprex can come from one of three places:
 
     1. **The clipboard** (the default). Code for the reprex will be taken from
        the clipboard if you leave ``code=None`` and ``code_file=None``.
@@ -256,9 +256,10 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
         ``'x = "hi there"\nprint(x)'``).
     code_file : str, optional
         Path to a file that contains your reprex.
-    venue : {'gh', 'so'}, optional
+    venue : {'gh', 'so', 'sx'}, optional
         The venue that your reprex is bound for. Choose 'gh' if your reprex
-        will be posted to GitHub or 'so' if it's bound for Stack Overflow.
+        will be posted to GitHub, 'so' if it's bound for Stack Overflow, or
+        'sx' if you will be inserting it into Sphinx docs.
     kernel_name : str, optional
         The name of the IPython kernel that you want to use to execute your
         reprex. Choosing ``kernel_name=None`` (the default) means you want to
@@ -267,14 +268,16 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
         <https://ipython.readthedocs.io/en/stable/install/kernel_install.html#kernels-for-different-environments>`_
         for details on how to create/use a custom kernel.
     comment : str, optional
-        String that should be used to comment out your code's outputs.
+        String that should be used to comment out your code's outputs. This
+        parameter is ignored if ``venue='sx'``.
     si : bool, optional
         Do you want to display your IPython kernel's session info at the end of
         the reprex? See :py:class:`reprexpy.session_info.SessionInfo` for
-        details on session info.
+        details on session info. This parameter is ignored if ``venue='sx'``.
     advertise : bool, optional
         Do you want to include a note at the bottom of your reprex that says
-        that it was produced by the reprexpy package?
+        that it was produced by the reprexpy package? This parameter is ignored
+        if ``venue='sx'``.
 
     Returns
     -------
@@ -309,6 +312,26 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
         y = " old friend"
         print(x + y)
         #> hi there old friend
+
+    Render a code example to insert into Sphinx docs:
+
+    >>> import reprexpy
+    >>> file_path = reprexpy.reprex_ex('sphinx-venue.py')
+    >>> print(reprexpy.reprex(code_file=file_path, venue='sx'))
+        >>> import matplotlib.pyplot as plt
+        >>> x = "hi there\nold friend"
+        >>> x
+        'hi there\nold friend'
+        >>> print(x)
+        hi there
+        old friend
+        >>> data = [1, 2, 3, 4]
+        >>> # i'm creating a plot here
+        >>> plt.plot(data);
+        >>> plt.ylabel('some numbers');
+        >>> plt.show()
+        .. image:: https://i.imgur.com/TRv5sNK.png
+        >>> plt.close()
 
     """
 
