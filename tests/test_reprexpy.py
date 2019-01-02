@@ -54,7 +54,7 @@ def test_two_statements_per_line():
 def test_plot_outputs():
     ex = _read_ex_fi("tests/reprexes/plot-output.py")
     out = _reprex_basic(ex)
-    assert len(re.findall("https://i.imgur.com", out)) == 3
+    assert len(re.findall("https://i\.imgur\.com", out)) == 3
 
 
 def test_exception_handling():
