@@ -124,7 +124,7 @@ def _get_code_block_start_stops(outputs, si):
 # during this process we also process some of the text outputs where needed
 # (e.g., strip ansi color codes from error traceback text) and add our output
 # comment char to the beginning of each text output line.
-def _get_one_txt_output(output_el, comment):
+def _get_one_txt_output(output_el, comment, venue):
     if not output_el:
         pass
         return None
@@ -161,36 +161,45 @@ def _get_one_txt_output(output_el, comment):
     else:
         assert False, "Ran into an unknown output_type"
 
-    return [comment + ' ' + i for i in txt]
+    if venue == 'sx':
+        return txt
+    else:
+        return [comment + ' ' + i for i in txt]
 
 
 # for each element of the output list (i.e., for each output for a given cell),
 # get all the text outputs of that cell and merge them into a single list
-def _get_cell_txt_outputs(outputs, comment):
-    tmp_out = [[_get_one_txt_output(j, comment) for j in i] for i in outputs]
+def _get_cell_txt_outputs(outputs, comment, venue):
+    tmp_out = [
+        [_get_one_txt_output(j, comment, venue) for j in i]
+        for i in outputs
+    ]
     # remove None values in lists
     tmp_out = [[j for j in i if j] for i in tmp_out]
     # merge multi-element lists into single element lists
     return [[x for i in one for x in i] for one in tmp_out]
 
 
-def _proc_one_display_data_node(node):
+def _get_image_urls(node):
     data = node["data"]["image/png"].encode()
     authentication = {'Authorization': 'Client-ID ' + '14fb4fdc5c02a96'}
-    req_out = pyimgur.request.send_request(
+    return pyimgur.request.send_request(
         'https://api.imgur.com/3/image',
         params={'image': data},
         method='POST',
         authentication=authentication
-    )
-    return "![](" + req_out[0]["link"] + ")"
+    )[0]["link"]
 
 
-def _get_plot_output_txt(one_out):
+def _get_plot_output_txt(one_out, venue):
     if _any_plot_outputs(one_out):
-        ptxt_out = [
-            _proc_one_display_data_node(i)
+        img_urls = [
+            _get_image_urls(i)
             for i in one_out if _is_plot_output(i)
+        ]
+        ptxt_out = [
+            "    .. image:: " + i if venue == 'sx' else "![](" + i + ")"
+            for i in img_urls
         ]
         ptxt_out = '\n\n'.join(ptxt_out)
         return '\n\n' + ptxt_out
@@ -319,18 +328,25 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
                 "the `code_file` parameter instead of using the clipboard."
             )
 
+    if venue == 'sx':
+        si = False
+        advertise = False
+
     print("Rendering reprex...")
     statement_chunks = _get_statement_chunks(code_str, si=si)
     node_out = _run_nb(statement_chunks, kernel_name)
     outputs = _extract_outputs(node_out.cells)
     start_stops = _get_code_block_start_stops(outputs, si=si)
-    txt_outputs = _get_cell_txt_outputs(outputs, comment)
+    txt_outputs = _get_cell_txt_outputs(outputs, comment=comment, venue=venue)
 
+    if venue == 'sx':
+        statement_chunks = [[j for j in i if j != ''] for i in statement_chunks]
+        statement_chunks = [['>>> ' + j for j in i] for i in statement_chunks]
     txt_chunks = [
         i + j if j else i
         for i, j in zip(statement_chunks, txt_outputs)
     ]
-    if venue == 'so':
+    if venue in ['so', 'sx']:
         txt_chunks = [['    ' + j for j in i] for i in txt_chunks]
     txt_chunks = ['\n'.join(i) for i in txt_chunks]
 
@@ -340,7 +356,7 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
         code_blocks = ["```python\n" + i + "\n```" for i in code_blocks]
 
     plot_txt_outputs = [
-        _get_plot_output_txt(outputs[i[1]])
+        _get_plot_output_txt(outputs[i[1]], venue=venue)
         for i in start_stops
     ]
     fin_chunks = [i + j for i, j in zip(code_blocks, plot_txt_outputs)]

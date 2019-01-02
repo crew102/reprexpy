@@ -109,7 +109,6 @@ def test_si_imports():
 
 
 def test_si_non_imports():
-
     x = _read_ex_fi("tests/reprexes/non-imports.py")
     out = reprex(code=x, si=True)
     not_in_x = ['pickledb', 'matplotlib', 'ipython']
@@ -118,3 +117,10 @@ def test_si_non_imports():
     mout = _all_match(out, not_in_x)
     for i, j in zip(mout, not_in_x):
         assert not i, '%r found in session info' % j
+
+
+def test_sphinx_venue():
+    x = _read_ex_fi_pair("sphinx-venue")
+    out = reprex(code=x[0], venue='sx')
+    assert out.splitlines()[0:12] == x[1].splitlines()[0:12]
+    assert re.search('    \.\. image:: https://i\.imgur\.com', out)
