@@ -9,8 +9,8 @@ import pytest
 from reprexpy.reprex import reprex
 
 skip_on_travis = pytest.mark.skipif(
-    "TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-    reason="Skipping this test on Travis CI."
+    'TRAVIS' in os.environ and os.environ['TRAVIS'] == 'true',
+    reason='Skipping this test on Travis CI.'
 )
 
 
@@ -21,8 +21,8 @@ def _read_ex_fi(file):
 
 
 def _read_ex_fi_pair(pref):
-    x = os.path.join("tests", "reprexes", pref)
-    return [_read_ex_fi(x + i) for i in [".py", ".md"]]
+    x = os.path.join('tests', 'reprexes', pref)
+    return [_read_ex_fi(x + i) for i in ['.py', '.md']]
 
 
 def _ptxt(txt):
@@ -40,34 +40,34 @@ def _reprex_basic(*args, **kargs):
 
 
 def test_spliting_txt_output():
-    ex = _read_ex_fi_pair("txt-outputs")
+    ex = _read_ex_fi_pair('txt-outputs')
     out = _reprex_basic(ex[0])
     assert out == ex[1]
 
 
 def test_two_statements_per_line():
-    ex = _read_ex_fi_pair("two-statements-per-line")
+    ex = _read_ex_fi_pair('two-statements-per-line')
     out = _reprex_basic(ex[0])
     assert out == ex[1]
 
 
 def test_plot_outputs():
-    ex = _read_ex_fi("tests/reprexes/plot-output.py")
+    ex = _read_ex_fi('tests/reprexes/plot-output.py')
     out = _reprex_basic(ex)
-    assert len(re.findall("https://i\.imgur\.com", out)) == 3
+    assert len(re.findall('https://i\.imgur\.com', out)) == 3
 
 
 def test_exception_handling():
-    out = _reprex_basic("10 / 0")
-    one_t = _all_match(out, ["ZeroDivisionError"])
-    assert one_t[0], "ZeroDivisionError not found in output"
+    out = _reprex_basic('10 / 0')
+    one_t = _all_match(out, ['ZeroDivisionError'])
+    assert one_t[0], 'ZeroDivisionError not found in output'
 
 
 @skip_on_travis
 def test_input_types():
-    ex = _read_ex_fi("tests/reprexes/txt-outputs.py")
+    ex = _read_ex_fi('tests/reprexes/txt-outputs.py')
     out_x = _reprex_basic(ex)
-    out_infile = _reprex_basic(code_file="tests/reprexes/txt-outputs.py")
+    out_infile = _reprex_basic(code_file='tests/reprexes/txt-outputs.py')
     pyperclip.copy(ex)
     out_clip = _reprex_basic()
     assert len(set([out_x, out_infile, out_clip])) == 1
@@ -82,12 +82,12 @@ def test_output_to_clipboard():
 
 def test_misc_params():
     code = """
-    var = "some var"
+    var = 'some var'
     var
     """
     out = reprex(_ptxt(code), venue='so', comment='#<>', advertise=True)
     mlst = [
-        '    var = "some var"', '#<>',
+        '    var = \'some var\'', '#<>',
         'Created on.*by the \[reprexpy package\]'
     ]
     mout = _all_match(out, mlst)
@@ -96,12 +96,12 @@ def test_misc_params():
 
 
 def test_si_imports():
-    x = _read_ex_fi("tests/reprexes/imports.py")
+    x = _read_ex_fi('tests/reprexes/imports.py')
     out = reprex(code=x, si=True)
     x_in = [
         'nbconvert', 'asttokens', 'pyimgur', 'stdlib-list', 'ipython', 'pyzmq'
     ]
-    x_in = [i + "==" for i in x_in]
+    x_in = [i + '==' for i in x_in]
 
     mout = _all_match(out, x_in)
     for i, j in zip(mout, x_in):
@@ -109,10 +109,10 @@ def test_si_imports():
 
 
 def test_si_non_imports():
-    x = _read_ex_fi("tests/reprexes/non-imports.py")
+    x = _read_ex_fi('tests/reprexes/non-imports.py')
     out = reprex(code=x, si=True)
     not_in_x = ['pickledb', 'matplotlib', 'ipython']
-    not_in_x = [i + "==" for i in not_in_x]
+    not_in_x = [i + '==' for i in not_in_x]
 
     mout = _all_match(out, not_in_x)
     for i, j in zip(mout, not_in_x):
@@ -120,7 +120,7 @@ def test_si_non_imports():
 
 
 def test_sphinx_venue():
-    x = _read_ex_fi_pair("sphinx-venue")
+    x = _read_ex_fi_pair('sphinx-venue')
     out = reprex(code=x[0], venue='sx')
     assert out.splitlines()[0:12] == x[1].splitlines()[0:12]
     assert re.search('    \.\. image:: https://i\.imgur\.com', out)

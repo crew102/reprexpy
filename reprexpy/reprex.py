@@ -31,18 +31,18 @@ def _get_statement_chunks(code_str, si):
     schunks = [code_lines[start - 1:end] for start, end in zip(starts, ends)]
     if si:
         schunks = schunks + [
-            ["import reprexpy", "print(reprexpy.SessionInfo())"]
+            ['import reprexpy', 'print(reprexpy.SessionInfo())']
         ]
     return schunks
 
 
 def _get_setup_code():
-    magic_one = "%matplotlib inline"
+    magic_one = '%matplotlib inline'
     # save env var so SessionInfo can filter out import statements as needed
-    env = "import os; os.environ['REPREX_RUNNING'] = 'true'"
+    env = 'import os; os.environ["REPREX_RUNNING"] = "true"'
     # set up settings for displaying plot outputs
-    p1 = "import IPython.display; IPython.display.set_matplotlib_close(False)"
-    p2 = "import matplotlib.pyplot; matplotlib.pyplot.ioff();"
+    p1 = 'import IPython.display; IPython.display.set_matplotlib_close(False)'
+    p2 = 'import matplotlib.pyplot; matplotlib.pyplot.ioff();'
     python_statements = '; '.join([env, p1, p2])
     return [[magic_one]] + [[python_statements]]
 
@@ -52,8 +52,8 @@ def _run_nb(statement_chunks, kernel_name):
     statement_chunks = scode + statement_chunks
 
     nb = nbformat.v4.new_notebook()
-    nb["cells"] = [
-        nbformat.v4.new_code_cell("\n".join(i))
+    nb['cells'] = [
+        nbformat.v4.new_code_cell('\n'.join(i))
         for i in statement_chunks
     ]
     if kernel_name is None:
@@ -69,16 +69,16 @@ def _run_nb(statement_chunks, kernel_name):
 
 
 def _extract_outputs(cells):
-    all_outputs = [[] if not i["outputs"] else i["outputs"] for i in cells]
+    all_outputs = [[] if not i['outputs'] else i['outputs'] for i in cells]
     return all_outputs[len(_get_setup_code()):]
 
 
 # helper used in _get_code_block_start_stops
 def _is_plot_output(el):
     # check if the node is for an image output
-    if el.output_type == "display_data":
-        if hasattr(el, "data"):
-            if hasattr(el.data, "image/png"):
+    if el.output_type == 'display_data':
+        if hasattr(el, 'data'):
+            if hasattr(el.data, 'image/png'):
                 return True
     return False
 
@@ -87,7 +87,7 @@ def _any_plot_outputs(lst):
     return any([_is_plot_output(i) for i in lst])
 
 
-# get the line numbers where "code blocks" start and stop. a code block is a
+# get the line numbers where 'code blocks' start and stop. a code block is a
 # set of source code line(s)/text output(s) that need to be marked up using
 # github/so's syntax highlighters
 def _get_code_block_start_stops(outputs, si):
@@ -131,7 +131,7 @@ def _get_one_txt_output(output_el, comment, venue):
     elif output_el.output_type == 'execute_result':
         # results of type execute_result should always be strings, so have to
         # convert to list (of strings)
-        txt = [output_el["data"]["text/plain"]]
+        txt = [output_el['data']['text/plain']]
     elif output_el.output_type == 'stream':
         print_txt = output_el['text']
         # stream results will also be presented as strings, but we need to add
@@ -139,27 +139,27 @@ def _get_one_txt_output(output_el, comment, venue):
         # strip the trailing newlines that usually come with calling `print`,
         # which is desired behavior in our case.
         txt = print_txt.splitlines()
-    elif output_el.output_type == "error":
+    elif output_el.output_type == 'error':
         # error traceback is given in a list, usually with one line of
         # traceback per element. we need to remove ansi color codes from
         # traceback text and split any elements in list that are actually two
         # lines, then finally concat lists.
         txt = [
             re.sub('\x1b\\[(.*?)([@-~])', '', i)
-            for i in output_el["traceback"]
+            for i in output_el['traceback']
         ]
         txt = [i.splitlines() for i in txt]
         txt = [x for i in txt for x in i]
         txt = [
-            "Traceback (most recent call last):" if
-            re.search("traceback .+most recent call last", i, re.IGNORECASE)
+            'Traceback (most recent call last):' if
+            re.search('traceback .+most recent call last', i, re.IGNORECASE)
             else i
-            for i in txt if re.search("[^-]", i)
+            for i in txt if re.search('[^-]', i)
         ]
-    elif output_el.output_type == "display_data":
+    elif output_el.output_type == 'display_data':
         return None
     else:
-        assert False, "Ran into an unknown output_type"
+        assert False, 'Ran into an unknown output_type'
 
     if venue == 'sx':
         return txt
@@ -181,14 +181,14 @@ def _get_cell_txt_outputs(outputs, comment, venue):
 
 
 def _get_image_urls(node):
-    data = node["data"]["image/png"].encode()
+    data = node['data']['image/png'].encode()
     authentication = {'Authorization': 'Client-ID ' + '14fb4fdc5c02a96'}
     return pyimgur.request.send_request(
         'https://api.imgur.com/3/image',
         params={'image': data},
         method='POST',
         authentication=authentication
-    )[0]["link"]
+    )[0]['link']
 
 
 def _get_plot_output_txt(one_out, venue):
@@ -198,18 +198,18 @@ def _get_plot_output_txt(one_out, venue):
             for i in one_out if _is_plot_output(i)
         ]
         ptxt_out = [
-            "    .. image:: " + i if venue == 'sx' else "![](" + i + ")"
+            '    .. image:: ' + i if venue == 'sx' else '![](' + i + ')'
             for i in img_urls
         ]
         ptxt_out = '\n\n'.join(ptxt_out)
         return '\n\n' + ptxt_out
     else:
-        return ""
+        return ''
 
 
 def _get_advertisement():
     now = datetime.datetime.now()
-    date = now.strftime("%Y-%m-%d")
+    date = now.strftime('%Y-%m-%d')
     return '<sup>Created on ' + date + \
            ' by the [reprexpy package](https://github.com/crew102/reprexpy)</sup>'
 
@@ -228,7 +228,7 @@ def reprex_ex(file):
         A path to an example reprex file.
     """
     return pkg_resources.resource_filename(
-        "reprexpy", os.path.join("examples", file)
+        'reprexpy', os.path.join('examples', file)
     )
 
 
@@ -346,16 +346,16 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
             code_str = pyperclip.paste()
         except pyperclip.PyperclipException:
             raise Exception(
-                "Could not retrieve code from the clipboard. "
-                "Try putting your code in a file and using "
-                "the `code_file` parameter instead of using the clipboard."
+                'Could not retrieve code from the clipboard. '
+                'Try putting your code in a file and using '
+                'the `code_file` parameter instead of using the clipboard.'
             )
 
     if venue == 'sx':
         si = False
         advertise = False
 
-    print("Rendering reprex...")
+    print('Rendering reprex...')
     statement_chunks = _get_statement_chunks(code_str, si=si)
     node_out = _run_nb(statement_chunks, kernel_name)
     outputs = _extract_outputs(node_out.cells)
@@ -376,7 +376,7 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     code_blocks = [txt_chunks[i[0]:(i[1] + 1)] for i in start_stops]
     code_blocks = ['\n'.join(i) for i in code_blocks]
     if venue == 'gh':
-        code_blocks = ["```python\n" + i + "\n```" for i in code_blocks]
+        code_blocks = ['```python\n' + i + '\n```' for i in code_blocks]
 
     plot_txt_outputs = [
         _get_plot_output_txt(outputs[i[1]], venue=venue)
@@ -403,8 +403,8 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     try:
         pyperclip.copy(out)
     except RuntimeError:
-        print("Could not copy rendered reprex to the clipboard.\n")
+        print('Could not copy rendered reprex to the clipboard.\n')
     else:
-        print("Rendered reprex is on the clipboard.\n")
+        print('Rendered reprex is on the clipboard.\n')
 
     return out

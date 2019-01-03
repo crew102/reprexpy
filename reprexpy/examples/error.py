@@ -2,8 +2,8 @@ import re
 
 # i'm trying to test whether a pattern is contained in a string using the
 # re package.
-string = "i love the reprexpy package"
-pattern = "reprexpy"
+string = 'i love the reprexpy package'
+pattern = 'reprexpy'
 
 # the first problem i ran into was a "TypeError":
 re.match(pattern)
