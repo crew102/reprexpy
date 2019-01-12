@@ -1,4 +1,4 @@
-Copyright 2018 Christopher Crew Baker
+Copyright 2019 Christopher Crew Baker
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

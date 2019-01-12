@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = u'reprexpy'
-copyright = u'2018, Christopher Baker'
+copyright = u'2019, Christopher Baker'
 author = u'Christopher Baker'
 
 # The short X.Y version
