@@ -13,6 +13,24 @@ import pkg_resources
 # Helper functions for reprex() ---------------------------
 
 
+def _get_source_code(code, code_file):
+    if code is not None:
+        code_str = code
+    elif code_file is not None:
+        with open(code_file) as fi:
+            code_str = fi.read()
+    else:
+        try:
+            code_str = pyperclip.paste()
+        except pyperclip.PyperclipException:
+            raise Exception(
+                'Could not retrieve code from the clipboard. '
+                'Try putting your code in a file and using '
+                'the `code_file` parameter instead of using the clipboard.'
+            )
+    return code_str
+
+
 # a "statement chunk" includes all lines (including comments/empty lines) that
 # come after the preceding python statement and before the statement in this
 # chunk. each chunk will be placed in a notebook cell.
@@ -335,22 +353,8 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
 
     """
 
-    # get source code string
-    if code is not None:
-        code_str = code
-    elif code_file is not None:
-        with open(code_file) as fi:
-            code_str = fi.read()
-    else:
-        try:
-            code_str = pyperclip.paste()
-        except pyperclip.PyperclipException:
-            raise Exception(
-                'Could not retrieve code from the clipboard. '
-                'Try putting your code in a file and using '
-                'the `code_file` parameter instead of using the clipboard.'
-            )
-
+    code_str = _get_source_code(code, code_file)
+    
     if venue == 'sx':
         si = False
         advertise = False
