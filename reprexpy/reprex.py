@@ -31,17 +31,16 @@ def _get_source_code(code, code_file):
     return code_str
 
 
-# a "statement chunk" includes all lines (including comments/empty lines) that
-# come after the preceding python statement and before the statement in this
-# chunk. each chunk will be placed in a notebook cell.
-def _get_statement_chunks(code_str, si):
+# an "input chunk" includes all lines (including comments/empty lines) that
+# come after the preceding python statement and before the python statement in
+# this chunk. each chunk will be placed in a notebook cell.
+def _get_input_chunks(code_str, si):
     tok = asttokens.ASTTokens(code_str, parse=True)
 
     ends = {statement.last_token.end[0] for statement in tok.tree.body}
     ends = list(sorted(ends))
 
     starts = [i + 1 for i in ends]
-    # insert 1 as first value and remove last value
     starts.insert(0, 1)
     starts = starts[:-1]
 
@@ -106,14 +105,13 @@ def _any_plot_outputs(lst):
 
 
 # get the line numbers where 'code blocks' start and stop. a code block is a
-# set of source code line(s)/text output(s) that need to be marked up using
-# github/so's syntax highlighters
+# set of source code line(s)/text output(s) that are all inside the same
+# fenced-in code block.
 def _get_code_block_start_stops(outputs, si):
     len_outputs = len(outputs)
     last_ind = len_outputs - 1
 
-    # get list of indexes that define code block ends... a statement is
-    # considered the last statement in a block if that statement either
+    # a statement is the last statement in a block if that statement either
     # returned a plot output or is the statement right before the call the
     # SessionInfo()
     cb_stops = [
@@ -186,8 +184,10 @@ def _get_one_txt_output(output_el, comment, venue):
 
 
 # for each element of the output list (i.e., for each output for a given cell),
-# get all the text outputs of that cell and merge them into a single list
-def _get_cell_txt_outputs(outputs, comment, venue):
+# get all the text outputs of that cell and merge them into a single list. all
+# outputs are considered "text outputs" except those that correspond to plot
+# output.
+def _get_txt_outputs(outputs, comment, venue):
     tmp_out = [
         [_get_one_txt_output(j, comment, venue) for j in i]
         for i in outputs
@@ -209,7 +209,7 @@ def _get_image_urls(node):
     )[0]['link']
 
 
-def _get_plot_output_txt(one_out, venue):
+def _get_markedup_urls(one_out, venue):
     if _any_plot_outputs(one_out):
         img_urls = [
             _get_image_urls(i)
@@ -354,53 +354,59 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     """
 
     code_str = _get_source_code(code, code_file)
-    
+
     if venue == 'sx':
         si = False
         advertise = False
 
     print('Rendering reprex...')
-    statement_chunks = _get_statement_chunks(code_str, si=si)
-    node_out = _run_nb(statement_chunks, kernel_name)
+    input_chunks = _get_input_chunks(code_str, si=si)
+    node_out = _run_nb(input_chunks, kernel_name)
     outputs = _extract_outputs(node_out.cells)
     start_stops = _get_code_block_start_stops(outputs, si=si)
-    txt_outputs = _get_cell_txt_outputs(outputs, comment=comment, venue=venue)
+    txt_outputs = _get_txt_outputs(outputs, comment=comment, venue=venue)
 
+    # add txt_outputs to the source code (input_chunks) to create txt_chunks
     if venue == 'sx':
-        statement_chunks = [[j for j in i if j != ''] for i in statement_chunks]
-        statement_chunks = [['>>> ' + j for j in i] for i in statement_chunks]
+        input_chunks = [[j for j in i if j != ''] for i in input_chunks]
+        input_chunks = [['>>> ' + j for j in i] for i in input_chunks]
     txt_chunks = [
         i + j if j else i
-        for i, j in zip(statement_chunks, txt_outputs)
+        for i, j in zip(input_chunks, txt_outputs)
     ]
     if venue in ['so', 'sx']:
         txt_chunks = [['    ' + j for j in i] for i in txt_chunks]
     txt_chunks = ['\n'.join(i) for i in txt_chunks]
 
+    # group the txt_chunks into code_blocks
     code_blocks = [txt_chunks[i[0]:(i[1] + 1)] for i in start_stops]
     code_blocks = ['\n'.join(i) for i in code_blocks]
     if venue == 'gh':
         code_blocks = ['```python\n' + i + '\n```' for i in code_blocks]
 
-    plot_txt_outputs = [
-        _get_plot_output_txt(outputs[i[1]], venue=venue)
+    # extract the urls to any plots and add the marked-up version of these
+    # urls at the end of the corresponding code bock
+    markedup_urls = [
+        _get_markedup_urls(outputs[i[1]], venue=venue)
         for i in start_stops
     ]
-    fin_chunks = [i + j for i, j in zip(code_blocks, plot_txt_outputs)]
+    final_blocks = [i + j for i, j in zip(code_blocks, markedup_urls)]
 
+    # add misc markup items to the first/last block
     if venue == 'gh' and si:
-        fin_chunks[-1] = '<details><summary>Session info</summary>\n\n' + \
-                         fin_chunks[-1] + '\n\n</details>'
+        final_blocks[-1] = '<details><summary>Session info</summary>\n\n' + \
+                           final_blocks[-1] + '\n\n</details>'
     if advertise:
         if si:
-            fin_chunks[-1] = _get_advertisement() + '\n\n' + fin_chunks[-1]
+            final_blocks[-1] = _get_advertisement() + '\n\n' + final_blocks[-1]
         else:
-            fin_chunks[-1] = fin_chunks[-1] + '\n\n' + _get_advertisement()
-
-    out = '\n\n'.join(fin_chunks)
+            final_blocks[-1] = final_blocks[-1] + '\n\n' + _get_advertisement()
     if venue == 'so':
-        out = '# <!-- language-all: lang-py -->\n\n' + out
+        final_blocks[0] = '# <!-- language-all: lang-py -->\n\n' + \
+                          final_blocks[0]
 
+    # convert the list of blocks to a string
+    out = '\n\n'.join(final_blocks)
     if not isinstance(out, str):
         out = out.encode('utf8')
 
