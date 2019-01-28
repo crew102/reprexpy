@@ -3,6 +3,7 @@
 > Render **repr**oducible **ex**amples of Python code for posting to GitHub/Stack Overflow (port of R package `reprex`)
 
 [![Linux Build Status](https://travis-ci.org/crew102/reprexpy.svg?branch=master)](https://travis-ci.org/crew102/reprexpy)
+[![Documentation Status](https://readthedocs.org/projects/reprexpy/badge/?version=latest)](https://reprexpy.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://img.shields.io/pypi/v/reprexpy.svg)](https://pypi.org/project/reprexpy/)
 [![Python versions](https://img.shields.io/pypi/pyversions/reprexpy.svg)](https://pypi.org/project/reprexpy/)
 
