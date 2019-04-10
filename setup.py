@@ -24,6 +24,12 @@ this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, 'README.md')) as f:
     long_description = f.read()
 
+# Only include pytest-runner in setup_requires if we're invoking tests
+if {'pytest', 'test', 'ptr'}.intersection(sys.argv):
+    setup_requires = ['pytest-runner']
+else:
+    setup_requires = []
+    
 setup(
     name='reprexpy',
     version='0.3.0',
@@ -46,7 +52,7 @@ setup(
     packages=['reprexpy'],
     install_requires=install_requires,
     tests_require=['pytest', 'pyzmq', 'pickledb'],
-    setup_requires=["pytest-runner"],
+    setup_requires=setup_requires,
     package_data={
         'reprexpy': ['examples/*.py'],
     }
