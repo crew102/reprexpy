@@ -12,15 +12,15 @@ import pkg_resources
 
 # goal: id distribution names + version numbers for all distributions that
 # include at least one module that the user has explicitly imported in their
-# script (including modules imported in the form `from module import object`),
-# excluding those modules that were either imported via a relative import or
+# script (including modules imported in the form `from module import object`).
+# don't include modules that were either imported via a relative import or
 # those that are part of the python standard lib.
 #
-# we can't rely on just the global symbol table to see what modules are loaded
-# b/c we won't find the module name if the module is loaded in the form
-# `from module import object`. also, we can't just use sys.modules as our list
-# of loaded modules, b/c this list includes all loaded mods (including those
-# not loaded explicitly by the user).
+# background: we can't rely on just the global symbol table to see what modules
+# are loaded b/c we won't find the module name if the module is loaded in the
+# form `from module import object`. also, we can't just use sys.modules as our
+# list of loaded modules, b/c this list includes all loaded mods (including
+# those not loaded explicitly by the user).
 #
 # approach taken:
 # 1. get names of *most* imported modules (including packages) by parsing names
@@ -28,13 +28,13 @@ import pkg_resources
 # import happens in form `from module_a import module_b` (module_b won't be
 # added to our list of mods...instead, we will be relying on the module_a's
 # name to get us the name of the distribution that these mods belong to).
-# 2. ensure that the module's id'd in step 1 are actually loaded by cross
+# 2. ensure that the modules id'd in step 1 are actually loaded by cross
 # reffing mod names to sys.modules table. this will ensure that import
-# statements that don't actually get executed in users's code don't impact
-# final list...note, mods involved in import statements that don't actually
-# get run could still show up n sys.modules if they are loaded by another mod
+# statements that don't actually get executed in users's code don't get
+# included...note, mods involved in import statements that don't actually
+# get run could still show up in sys.modules if they are loaded by another mod
 # that gets imported, so this won't be perfect.
-# 3. try to find the name and version of the distribution that a mod is in.
+# 3. try to find the name and version of the distribution that the mod is in.
 class SessionInfo:
     """Class responsible for gathering IPython session information.
 
@@ -101,8 +101,6 @@ class SessionInfo:
         to_rep = 79 - len(x) + 1
         return x + ' ' + '-' * to_rep
 
-    # method used to initialize session_info field ---------------------------
-
     def _get_sesh_info_sectn(self):
         pf = platform.platform() + \
              ' (64-bit)' if sys.maxsize > 2 ** 32 else ' (32-bit)'
@@ -118,8 +116,6 @@ class SessionInfo:
             'Python': python_v,
             'Date': date
         }
-
-    # methods used to initialize pkg_info field ---------------------------
 
     def _get_potential_mods(self):
         ip_inst = IPython.core.getipython.get_ipython()

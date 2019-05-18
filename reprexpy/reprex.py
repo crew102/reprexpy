@@ -32,7 +32,7 @@ def _get_source_code(code, code_file):
 
 
 # an "input chunk" includes all lines (including comments/empty lines) that
-# come after the preceding python statement and before the python statement in
+# come after the preceding python statement and before the statement in
 # this chunk. each chunk will be placed in a notebook cell.
 def _get_input_chunks(code_str, si):
     tok = asttokens.ASTTokens(code_str, parse=True)
@@ -55,7 +55,7 @@ def _get_input_chunks(code_str, si):
 
 def _get_setup_code():
     magic_one = '%matplotlib inline'
-    # save env var so SessionInfo can filter out import statements as needed
+    # set envvar so SessionInfo can filter out setup code as needed
     env = 'import os; os.environ["REPREX_RUNNING"] = "true"'
     # set up settings for displaying plot outputs
     p1 = 'import IPython.display; IPython.display.set_matplotlib_close(False)'
@@ -90,7 +90,6 @@ def _extract_outputs(cells):
     return all_outputs[len(_get_setup_code()):]
 
 
-# helper used in _get_code_block_start_stops
 def _is_plot_output(el):
     # check if the node is for an image output
     if el.output_type == 'display_data':
@@ -105,14 +104,14 @@ def _any_plot_outputs(lst):
 
 
 # get the line numbers where 'code blocks' start and stop. a code block is a
-# set of source code line(s)/text output(s) that are all inside the same
-# fenced-in code block.
+# set of source code line(s)/text output(s) that should all be placed inside
+# the same fenced-in code block.
 def _get_code_block_start_stops(outputs, si):
     len_outputs = len(outputs)
     last_ind = len_outputs - 1
 
     # a statement is the last statement in a block if that statement either
-    # returned a plot output or is the statement right before the call the
+    # returned a plot output or is the statement right before the call to
     # SessionInfo()
     cb_stops = [
         i[0]
@@ -128,18 +127,19 @@ def _get_code_block_start_stops(outputs, si):
     # the first statement doesn't result in plot output, which seems safe.
     cb_starts = [0] + [i + 1 for i in cb_stops if i + 1 <= last_ind]
 
-    assert len(cb_starts) == len(cb_stops), \
-        '\n\nlist of start indexes for code blocks is not' \
-        ' the same length of as list of stop indexes. starts is {} while ' \
+    assert len(cb_starts) == len(cb_stops), (
+        '\n\nlist of start indexes for code blocks is not' 
+        ' the same length of as list of stop indexes. starts is {} while ' 
         'stops is {}'.format(cb_starts, cb_stops)
+    )
 
     return list(zip(cb_starts, cb_stops))
 
 
-# we need to extract the text output for all output types except display_data.
-# during this process we also process some of the text outputs where needed
-# (e.g., strip ansi color codes from error traceback text) and add our output
-# comment char to the beginning of each text output line.
+# extract the text output for all output types except display_data. also
+# process some of the text outputs where needed (e.g., strip ansi color codes
+# from error traceback text) and add output comment char to the beginning of
+# each text output line.
 def _get_one_txt_output(output_el, comment, venue):
     if not output_el:
         pass
@@ -153,13 +153,12 @@ def _get_one_txt_output(output_el, comment, venue):
         # stream results will also be presented as strings, but we need to add
         # the comment char after each newline of printed text. note, this will
         # strip the trailing newlines that usually come with calling `print`,
-        # which is desired behavior in our case.
+        # which is desired behavior.
         txt = print_txt.splitlines()
     elif output_el.output_type == 'error':
         # error traceback is given in a list, usually with one line of
-        # traceback per element. we need to remove ansi color codes from
-        # traceback text and split any elements in list that are actually two
-        # lines, then finally concat lists.
+        # traceback per element. remove ansi color codes from traceback text
+        # and split any elements in list that are actually two lines.
         txt = [
             re.sub('\x1b\\[(.*?)([@-~])', '', i)
             for i in output_el['traceback']
@@ -192,9 +191,7 @@ def _get_txt_outputs(outputs, comment, venue):
         [_get_one_txt_output(j, comment, venue) for j in i]
         for i in outputs
     ]
-    # remove None values in lists
     tmp_out = [[j for j in i if j] for i in tmp_out]
-    # merge multi-element lists into single element lists
     return [[x for i in one for x in i] for one in tmp_out]
 
 
@@ -366,7 +363,7 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     start_stops = _get_code_block_start_stops(outputs, si=si)
     txt_outputs = _get_txt_outputs(outputs, comment=comment, venue=venue)
 
-    # add txt_outputs to the source code (input_chunks) to create txt_chunks
+    # add txt_outputs to source code (input_chunks) to create txt_chunks
     if venue == 'sx':
         input_chunks = [[j for j in i if j != ''] for i in input_chunks]
         input_chunks = [['>>> ' + j for j in i] for i in input_chunks]
@@ -378,14 +375,13 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
         txt_chunks = [['    ' + j for j in i] for i in txt_chunks]
     txt_chunks = ['\n'.join(i) for i in txt_chunks]
 
-    # group the txt_chunks into code_blocks
+    # group txt_chunks into code_blocks
     code_blocks = [txt_chunks[i[0]:(i[1] + 1)] for i in start_stops]
     code_blocks = ['\n'.join(i) for i in code_blocks]
     if venue == 'gh':
         code_blocks = ['```python\n' + i + '\n```' for i in code_blocks]
 
-    # extract the urls to any plots and add the marked-up version of these
-    # urls at the end of the corresponding code bock
+    # extract urls to plots and add mark them up
     markedup_urls = [
         _get_markedup_urls(outputs[i[1]], venue=venue)
         for i in start_stops
@@ -405,7 +401,7 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
         final_blocks[0] = '# <!-- language-all: lang-py -->\n\n' + \
                           final_blocks[0]
 
-    # convert the list of blocks to a string
+    # convert list of code blocks to a string
     out = '\n\n'.join(final_blocks)
     if not isinstance(out, str):
         out = out.encode('utf8')
