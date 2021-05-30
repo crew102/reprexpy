@@ -6,7 +6,7 @@ import os.path
 import pyperclip
 import pytest
 
-from reprexpy.reprex import reprex
+from reprexpy import reprex
 
 skip_on_travis = pytest.mark.skipif(
     'TRAVIS' in os.environ and os.environ['TRAVIS'] == 'true',
@@ -54,7 +54,7 @@ def test_two_statements_per_line():
 def test_plot_outputs():
     ex = _read_ex_fi('tests/reprexes/plot-output.py')
     out = _reprex_basic(ex)
-    assert len(re.findall('https://i\.imgur\.com', out)) == 3
+    assert len(re.findall('https://i\\.imgur\\.com', out)) == 3
 
 
 def test_exception_handling():
@@ -88,7 +88,7 @@ def test_misc_params():
     out = reprex(_ptxt(code), venue='so', comment='#<>', advertise=True)
     mlst = [
         '    var = \'some var\'', '#<>',
-        'Created on.*by the \[reprexpy package\]'
+        'Created on.*by the \\[reprexpy package\\]'
     ]
     mout = _all_match(out, mlst)
     for i, j in zip(mout, mlst):

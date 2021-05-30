@@ -119,7 +119,8 @@ class SessionInfo:
 
     def _get_potential_mods(self):
         ip_inst = IPython.core.getipython.get_ipython()
-        assert ip_inst, "SessionInfo() doesn't work outside of IPython"
+        if not ip_inst:
+            raise RuntimeError("SessionInfo() doesn't work outside of IPython")
         code = ip_inst.user_ns['In']
         # drop setup code if a reprex is running
         if os.environ.get('REPREX_RUNNING'):

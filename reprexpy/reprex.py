@@ -142,7 +142,6 @@ def _get_code_block_start_stops(outputs, si):
 # each text output line.
 def _get_one_txt_output(output_el, comment, venue):
     if not output_el:
-        pass
         return None
     elif output_el.output_type == 'execute_result':
         # results of type execute_result should always be strings, so have to
@@ -166,15 +165,15 @@ def _get_one_txt_output(output_el, comment, venue):
         txt = [i.splitlines() for i in txt]
         txt = [x for i in txt for x in i]
         txt = [
-            'Traceback (most recent call last):' if
-            re.search('traceback .+most recent call last', i, re.IGNORECASE)
+            'Traceback (most recent call last):'
+            if re.search('traceback .+most recent call last', i, re.IGNORECASE)
             else i
             for i in txt if re.search('[^-]', i)
         ]
     elif output_el.output_type == 'display_data':
         return None
     else:
-        assert False, 'Ran into an unknown output_type'
+        raise RuntimeError('Ran into an unknown output_type')
 
     if venue == 'sx':
         return txt
@@ -327,26 +326,6 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
         y = " old friend"
         print(x + y)
         #> hi there old friend
-
-    Render a code example to insert into Sphinx docs:
-
-    >>> import reprexpy
-    >>> file_path = reprexpy.reprex_ex('sphinx-venue.py')
-    >>> print(reprexpy.reprex(code_file=file_path, venue='sx'))
-        >>> import matplotlib.pyplot as plt
-        >>> x = "hi there\nold friend"
-        >>> x
-        'hi there\nold friend'
-        >>> print(x)
-        hi there
-        old friend
-        >>> data = [1, 2, 3, 4]
-        >>> # i'm creating a plot here
-        >>> plt.plot(data);
-        >>> plt.ylabel('some numbers');
-        >>> plt.show()
-        .. image:: https://i.imgur.com/TRv5sNK.png
-        >>> plt.close()
 
     """
 
