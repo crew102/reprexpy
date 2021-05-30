@@ -8,9 +8,9 @@ import pytest
 
 from reprexpy import reprex
 
-skip_on_travis = pytest.mark.skipif(
-    'TRAVIS' in os.environ and os.environ['TRAVIS'] == 'true',
-    reason='Skipping this test on Travis CI.'
+skip_on_github = pytest.mark.skipif(
+    'CI' in os.environ,
+    reason='Skipping during Github workflow.'
 )
 
 
@@ -63,7 +63,7 @@ def test_exception_handling():
     assert one_t[0], 'ZeroDivisionError not found in output'
 
 
-@skip_on_travis
+@skip_on_github
 def test_input_types():
     ex = _read_ex_fi('tests/reprexes/txt-outputs.py')
     out_x = _reprex_basic(ex)
@@ -73,7 +73,7 @@ def test_input_types():
     assert len(set([out_x, out_infile, out_clip])) == 1
 
 
-@skip_on_travis
+@skip_on_github
 def test_output_to_clipboard():
     _reprex_basic('x = "hi there"; print(x)')
     assert pyperclip.paste() == '```python\nx = "hi there"; ' \
