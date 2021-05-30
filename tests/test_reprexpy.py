@@ -119,8 +119,7 @@ def test_si_non_imports():
         assert not i, '%r found in session info' % j
 
 
-def test_sphinx_venue():
-    x = _read_ex_fi_pair('sphinx-venue')
-    out = reprex(code=x[0], venue='sx')
-    assert out.splitlines()[0:12] == x[1].splitlines()[0:12]
-    assert re.search('    \.\. image:: https://i\.imgur\.com', out)
+def test_docstring_venue():
+    ex = _read_ex_fi_pair('docstring-venue')
+    out = reprex(ex[0], venue='sx')
+    assert out == ex[1]

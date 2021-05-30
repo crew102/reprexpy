@@ -274,7 +274,7 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     venue : {'gh', 'so', 'sx'}, optional
         The venue that your reprex is bound for. Choose 'gh' if your reprex
         will be posted to GitHub, 'so' if it's bound for Stack Overflow, or
-        'sx' if you will be inserting it into Sphinx docs.
+        'sx' if you will be inserting it into a docstring.
     kernel_name : str, optional
         The name of the IPython kernel that you want to use to execute your
         reprex. Choosing ``kernel_name=None`` (the default) means you want to

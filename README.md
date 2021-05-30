@@ -108,9 +108,9 @@ SessionInfo()
 #> requests==2.19.1
 ```
 
-## Render Sphinx code examples
+## Render code examples for docstrings
 
-Creating code examples to insert into Sphinx docs is a breeze with `reprex()`. For example, let's say you want to include an example for the following function:
+Creating code examples to insert into docstrings is a breeze with `reprex()`. For example, let's say you want to include an example for the following function:
 
 ```python
 def are_dogs_awesome():
