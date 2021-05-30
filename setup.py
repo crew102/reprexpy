@@ -4,8 +4,8 @@ from os import path
 from setuptools import setup
 
 install_requires = [
-    'pyperclip', 'asttokens', 'nbconvert', 'nbformat', 'matplotlib', 'ipython',
-    'pyimgur', 'setuptools', 'stdlib-list', 'ipykernel', 'tornado<=5.1.1'
+    'pyperclip', 'asttokens', 'nbconvert<=6.0.1', 'nbformat', 'matplotlib', 'ipython',
+    'pyimgur', 'setuptools', 'stdlib-list', 'ipykernel', 'tornado'
 ]
 
 is_v2 = sys.version_info[0] == 2
