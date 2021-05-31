@@ -4,8 +4,8 @@ from os import path
 from setuptools import setup
 
 install_requires = [
-    'pyperclip', 'asttokens', 'nbconvert<=6.0.1', 'nbformat', 'matplotlib', 'ipython',
-    'pyimgur', 'setuptools', 'stdlib-list', 'ipykernel', 'tornado'
+    'pyperclip', 'asttokens', 'nbconvert<=6.0.1', 'nbformat', 'matplotlib',
+    'ipython', 'pyimgur', 'setuptools', 'stdlib-list', 'ipykernel', 'tornado'
 ]
 
 is_low_v3 = sys.version_info[0] == 3 and sys.version_info[1] <= 4
@@ -16,7 +16,8 @@ if is_low_v3:
 # "Beginning with Matplotlib 3.1, Python 3.6 or above is required", so if we're
 # building against python 3.5, we have to require matplotlib < 3.1. otherwise
 # we'll get latest version of matplotlib which will throw error
-if sys.version_info[0] == 3 and sys.version_info[1] == 5:
+is_v35 = sys.version_info[0] == 3 and sys.version_info[1] == 5
+if is_v35:
     install_requires.remove('matplotlib')
     install_requires.append('matplotlib<3.1')
 
@@ -24,7 +25,6 @@ this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, 'README.md')) as f:
     long_description = f.read()
 
-# Only include pytest-runner in setup_requires if we're invoking tests
 if {'pytest', 'test', 'ptr'}.intersection(sys.argv):
     setup_requires = ['pytest-runner']
 else:
@@ -46,7 +46,5 @@ setup(
     tests_require=['pytest', 'pyzmq', 'pickledb'],
     setup_requires=setup_requires,
     python_requires='>=3.5',
-    package_data={
-        'reprexpy': ['examples/*.py'],
-    }
+    package_data={'reprexpy': ['examples/*.py']}
 )
