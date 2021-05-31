@@ -5,7 +5,6 @@
 [![Build](https://github.com/crew102/reprexpy/actions/workflows/build.yml/badge.svg)](https://github.com/crew102/reprexpy/actions/workflows/build.yml)
 [![Documentation Status](https://readthedocs.org/projects/reprexpy/badge/?version=latest)](https://reprexpy.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://img.shields.io/pypi/v/reprexpy.svg)](https://pypi.org/project/reprexpy/)
-[![Python versions](https://img.shields.io/pypi/pyversions/reprexpy.svg)](https://pypi.org/project/reprexpy/)
 
 `reprexpy` is a Python package that renders **repr**oducible **ex**amples (also known as [reprexes](https://twitter.com/romain_francois/status/530011023743655936) or [minimal working examples (MWEs)](https://en.wikipedia.org/wiki/Minimal_Working_Example)) to a format suitable for posting to GitHub or Stack Overflow. It's a port of the R package [reprex](https://github.com/tidyverse/reprex).
 

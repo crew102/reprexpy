@@ -8,15 +8,8 @@ install_requires = [
     'pyimgur', 'setuptools', 'stdlib-list', 'ipykernel', 'tornado'
 ]
 
-is_v2 = sys.version_info[0] == 2
 is_low_v3 = sys.version_info[0] == 3 and sys.version_info[1] <= 4
-if is_v2:
-    install_requires.remove('ipython')
-    install_requires.append('ipython<6')
-    install_requires.remove('ipykernel')
-    install_requires.append('ipykernel<4.9')
-
-if is_v2 or is_low_v3:
+if is_low_v3:
     install_requires.remove('matplotlib')
     install_requires.append('matplotlib<3')
 
@@ -48,18 +41,11 @@ setup(
     author_email='chriscrewbaker@gmail.com',
     url='https://reprexpy.readthedocs.io/en/latest',
     license='LICENSE.txt',
-    classifiers=[
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6'
-    ],
     packages=['reprexpy'],
     install_requires=install_requires,
     tests_require=['pytest', 'pyzmq', 'pickledb'],
     setup_requires=setup_requires,
+    python_requires='>=3.5',
     package_data={
         'reprexpy': ['examples/*.py'],
     }
