@@ -1,13 +1,13 @@
+import os
 import re
 import datetime
-import os.path
+import pkg_resources
 
 import asttokens
 import nbconvert
 import nbformat
 import pyperclip
 import pyimgur
-import pkg_resources
 
 
 # Helper functions for reprex() ---------------------------
