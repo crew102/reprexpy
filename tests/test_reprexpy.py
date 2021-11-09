@@ -45,6 +45,12 @@ def test_spliting_txt_output():
     assert out == ex[1]
 
 
+def test_debug_example():
+    ex = _read_ex_fi_pair('debug-example')
+    out = _reprex_basic(ex[0])
+    assert out == ex[1]
+
+
 def test_two_statements_per_line():
     ex = _read_ex_fi_pair('two-statements-per-line')
     out = _reprex_basic(ex[0])
