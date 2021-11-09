@@ -12,6 +12,8 @@ import pyimgur
 
 # Helper functions for reprex() ---------------------------
 
+CLIENT_ID = '14fb4fdc5c02a96'
+
 
 def _get_source_code(code, code_file):
     if code is not None:
@@ -126,9 +128,8 @@ def _get_code_block_start_stops(outputs, si):
     cb_starts = [0] + [i + 1 for i in cb_stops if i + 1 <= last_ind]
 
     assert len(cb_starts) == len(cb_stops), (
-        '\n\nlist of start indexes for code blocks is not' 
-        ' the same length of as list of stop indexes. starts is {} while ' 
-        'stops is {}'.format(cb_starts, cb_stops)
+        f'list of start indexes for code blocks is not the same length as'
+        f' list of stop indexes ({cb_starts} != {cb_stops})'
     )
 
     return list(zip(cb_starts, cb_stops))
@@ -196,7 +197,7 @@ def _get_txt_outputs(outputs, comment, venue):
 
 def _get_image_urls(node):
     data = node['data']['image/png'].encode()
-    authentication = {'Authorization': 'Client-ID ' + '14fb4fdc5c02a96'}
+    authentication = {'Authorization': 'Client-ID ' + CLIENT_ID}
     return pyimgur.request.send_request(
         'https://api.imgur.com/3/image',
         params={'image': data},
@@ -212,7 +213,7 @@ def _get_markedup_urls(one_out, venue):
             for i in one_out if _is_plot_output(i)
         ]
         ptxt_out = [
-            '    .. image:: ' + i if venue == 'sx' else '![](' + i + ')'
+            f'    .. image:: {i}' if venue == 'sx' else f'![]({i})'
             for i in img_urls
         ]
         ptxt_out = '\n\n'.join(ptxt_out)
@@ -224,8 +225,10 @@ def _get_markedup_urls(one_out, venue):
 def _get_advertisement():
     now = datetime.datetime.now()
     date = now.strftime('%Y-%m-%d')
-    return '<sup>Created on ' + date + \
-           ' by the [reprexpy package](https://github.com/crew102/reprexpy)</sup>'
+    return (
+        f'<sup>Created on {date} by the '
+        f'[reprexpy package](https://github.com/crew102/reprexpy)</sup>'
+    )
 
 
 def reprex_ex(file):
@@ -345,7 +348,7 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     # add txt_outputs to source code (input_chunks) to create txt_chunks
     if venue == 'sx':
         input_chunks = [[j for j in i if j != ''] for i in input_chunks]
-        input_chunks = [['>>> ' + j for j in i] for i in input_chunks]
+        input_chunks = [[f'>>> {j}' for j in i] for i in input_chunks]
     txt_chunks = [
         i + j if j else i
         for i, j in zip(input_chunks, txt_outputs)
@@ -358,7 +361,7 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     code_blocks = [txt_chunks[i[0]:(i[1] + 1)] for i in start_stops]
     code_blocks = ['\n'.join(i) for i in code_blocks]
     if venue == 'gh':
-        code_blocks = ['```python\n' + i + '\n```' for i in code_blocks]
+        code_blocks = [f'```python\n{i}\n```' for i in code_blocks]
 
     # extract urls to plots and add mark them up
     markedup_urls = [
@@ -369,16 +372,18 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
 
     # add misc markup items to the first/last block
     if venue == 'gh' and si:
-        final_blocks[-1] = '<details><summary>Session info</summary>\n\n' + \
-                           final_blocks[-1] + '\n\n</details>'
+        final_blocks[-1] = (
+            '<details><summary>Session info</summary>\n\n' + final_blocks[-1] +
+            '\n\n</details>'
+        )
     if advertise:
         if si:
             final_blocks[-1] = _get_advertisement() + '\n\n' + final_blocks[-1]
         else:
             final_blocks[-1] = final_blocks[-1] + '\n\n' + _get_advertisement()
+
     if venue == 'so':
-        final_blocks[0] = '# <!-- language-all: lang-py -->\n\n' + \
-                          final_blocks[0]
+        final_blocks[0] = '# <!-- language-all: lang-py -->\n\n' + final_blocks[0]
 
     # convert list of code blocks to a string
     out = '\n\n'.join(final_blocks)
