@@ -137,7 +137,7 @@ class SessionInfo:
             tnode = type(node).__name__
             if tnode == 'Import':
                 return [i.name for i in node.names]
-            elif tnode == 'ImportFrom':
+            if tnode == 'ImportFrom':
                 return [node.module]
 
         mlist = [_get_one_mod(i) for i in asttokens.util.walk(tokes.tree)]

@@ -15,24 +15,22 @@ import pyimgur
 
 def _get_source_code(code, code_file):
     if code is not None:
-        code_str = code
-    elif code_file is not None:
+        return code
+    if code_file is not None:
         with open(code_file) as fi:
-            code_str = fi.read()
-    else:
-        try:
-            code_str = pyperclip.paste()
-        except pyperclip.PyperclipException:
-            raise Exception(
-                'Could not retrieve code from the clipboard. '
-                'Try putting your code in a file and using '
-                'the `code_file` parameter instead of using the clipboard.'
-            )
-    return code_str
+            return fi.read()
+    try:
+        return pyperclip.paste()
+    except pyperclip.PyperclipException:
+        raise pyperclip.PyperclipException(
+            'Could not retrieve code from the clipboard. '
+            'Try putting your code in a file and using '
+            'the `code_file` parameter instead of using the clipboard.'
+        )
 
 
-# an "input chunk" includes all lines (including comments/empty lines) that
-# come after the preceding python statement and before the statement in
+# an "input chunk" includes all lines (including comments/empty lines) that come
+# after the python statement in the preceding chunk and before the statement in
 # this chunk. each chunk will be placed in a notebook cell.
 def _get_input_chunks(code_str, si):
     tok = asttokens.ASTTokens(code_str, parse=True)
@@ -73,13 +71,13 @@ def _run_nb(statement_chunks, kernel_name):
         nbformat.v4.new_code_cell('\n'.join(i))
         for i in statement_chunks
     ]
-    if kernel_name is None:
+    if kernel_name is not None:
         ep = nbconvert.preprocessors.ExecutePreprocessor(
-            timeout=600, allow_errors=True
+            timeout=600, allow_errors=True, kernel_name=kernel_name
         )
     else:
         ep = nbconvert.preprocessors.ExecutePreprocessor(
-            timeout=600, allow_errors=True, kernel_name=kernel_name
+            timeout=600, allow_errors=True
         )
     node_out, _ = ep.preprocess(nb, {})
     return node_out
@@ -143,18 +141,20 @@ def _get_code_block_start_stops(outputs, si):
 def _get_one_txt_output(output_el, comment, venue):
     if not output_el:
         return None
-    elif output_el.output_type == 'execute_result':
+
+    output_type = output_el.output_type
+    if output_type == 'execute_result':
         # results of type execute_result should always be strings, so have to
         # convert to list (of strings)
         txt = [output_el['data']['text/plain']]
-    elif output_el.output_type == 'stream':
+    elif output_type == 'stream':
         print_txt = output_el['text']
         # stream results will also be presented as strings, but we need to add
         # the comment char after each newline of printed text. note, this will
         # strip the trailing newlines that usually come with calling `print`,
         # which is desired behavior.
         txt = print_txt.splitlines()
-    elif output_el.output_type == 'error':
+    elif output_type == 'error':
         # error traceback is given in a list, usually with one line of
         # traceback per element. remove ansi color codes from traceback text
         # and split any elements in list that are actually two lines.
@@ -170,7 +170,7 @@ def _get_one_txt_output(output_el, comment, venue):
             else i
             for i in txt if re.search('[^-]', i)
         ]
-    elif output_el.output_type == 'display_data':
+    elif output_type == 'display_data':
         return None
     else:
         raise RuntimeError('Ran into an unknown output_type')
