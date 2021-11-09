@@ -97,11 +97,13 @@ class SessionInfo:
         )
         return '\n'.join(fl)
 
-    def _as_heading(self, x):
+    @staticmethod
+    def _as_heading(x):
         to_rep = 79 - len(x) + 1
         return x + ' ' + '-' * to_rep
 
-    def _get_sesh_info_sectn(self):
+    @staticmethod
+    def _get_sesh_info_sectn():
         pf = platform.platform() + \
              ' (64-bit)' if sys.maxsize > 2 ** 32 else ' (32-bit)'
 
@@ -117,7 +119,8 @@ class SessionInfo:
             'Date': date
         }
 
-    def _get_potential_mods(self):
+    @staticmethod
+    def _get_potential_mods():
         ip_inst = IPython.core.getipython.get_ipython()
         if not ip_inst:
             raise RuntimeError("SessionInfo() doesn't work outside of IPython")
@@ -143,7 +146,8 @@ class SessionInfo:
         mlist = [_get_one_mod(i) for i in asttokens.util.walk(tokes.tree)]
         return {j for i in mlist if i is not None for j in i}
 
-    def _get_dist_info(self, dist):
+    @staticmethod
+    def _get_dist_info(dist):
         try:
             md = dist.get_metadata('top_level.txt')
             mods = md.splitlines()
