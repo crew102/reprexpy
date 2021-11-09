@@ -392,9 +392,11 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
 
     try:
         pyperclip.copy(out)
-    except RuntimeError:
-        print('Could not copy rendered reprex to the clipboard.\n')
-    else:
         print('Rendered reprex is on the clipboard.\n')
+    except pyperclip.PyperclipException:
+        print(
+            'Could not copy rendered reprex to the clipboard. Use the '
+            'returned string instead\n'
+        )
 
     return out

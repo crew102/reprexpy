@@ -151,7 +151,7 @@ class SessionInfo:
         try:
             md = dist.get_metadata('top_level.txt')
             mods = md.splitlines()
-        except:
+        except FileNotFoundError:
             mods = []
         return {
             'project_name': dist.project_name,
