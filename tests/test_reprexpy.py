@@ -59,6 +59,8 @@ def test_plot_outputs():
     assert _count_mismatching_lines('plot-output') == 3
 
 
+def test_stack_overflow_venue():
+    assert _count_mismatching_lines('so-venue', venue='so') == 1
 
 
 def test_exception_handling():
