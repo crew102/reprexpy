@@ -1,7 +1,6 @@
-import textwrap
-import re
 import os
-import os.path
+import re
+import textwrap
 
 import pyperclip
 import pytest
@@ -14,20 +13,21 @@ skip_on_github = pytest.mark.skipif(
 )
 
 
-def _read_ex_fi(file):
+def _read_reprex_file(file):
     with open(file) as fi:
         lns = fi.read()
         return lns.rstrip('\n')
 
 
-def _read_ex_fi_pair(pref):
+def _read_reprex_file_pair(pref):
     x = os.path.join('tests', 'reprexes', pref)
-    return [_read_ex_fi(x + i) for i in ['.py', '.md']]
+    return [_read_reprex_file(x + i) for i in ['.py', '.md']]
 
 
-def _ptxt(txt):
-    dind = textwrap.dedent(txt)
-    return dind.strip('\n')
+def _assert_reprex_exact_match(file_name, *args, **kargs):
+    src, expected_output = _read_reprex_file_pair(file_name)
+    out = reprex(src, *args, **kargs)
+    assert out == expected_output
 
 
 def _all_match(out, regex_lst):
@@ -40,21 +40,18 @@ def _reprex_basic(*args, **kargs):
 
 
 def test_spliting_txt_output():
-    ex = _read_ex_fi_pair('txt-outputs')
-    out = _reprex_basic(ex[0])
-    assert out == ex[1]
+    _assert_reprex_exact_match('txt-outputs')
 
 
+# Good test to use during interactive debugging
 def test_debug_example():
-    ex = _read_ex_fi_pair('debug-example')
-    out = _reprex_basic(ex[0])
-    assert out == ex[1]
+    _assert_reprex_exact_match('debug-example')
 
 
 def test_two_statements_per_line():
-    ex = _read_ex_fi_pair('two-statements-per-line')
-    out = _reprex_basic(ex[0])
-    assert out == ex[1]
+    _assert_reprex_exact_match('two-statements-per-line')
+
+
 
 
 def test_plot_outputs():
