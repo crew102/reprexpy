@@ -30,13 +30,14 @@ def _assert_reprex_exact_match(file_name, *args, **kargs):
     assert out == expected_output
 
 
-def _all_match(out, regex_lst):
-    lns = out.splitlines()
-    return [any([re.search(rgx, line) for line in lns]) for rgx in regex_lst]
-
-
-def _reprex_basic(*args, **kargs):
-    return reprex(si=False, advertise=False, *args, **kargs)
+def _count_mismatching_lines(file_name, *args, **kargs):
+    src, expected_output = _read_reprex_file_pair(file_name)
+    out = reprex(src, *args, **kargs)
+    out_lines = out.splitlines()
+    expected_lines = expected_output.splitlines()
+    return sum(
+        [i != j for i, j in zip(out_lines, expected_lines)]
+    )
 
 
 def test_spliting_txt_output():
@@ -55,15 +56,14 @@ def test_two_statements_per_line():
 
 
 def test_plot_outputs():
-    ex = _read_ex_fi('tests/reprexes/plot-output.py')
-    out = _reprex_basic(ex)
-    assert len(re.findall('https://i\\.imgur\\.com', out)) == 3
+    assert _count_mismatching_lines('plot-output') == 3
+
+
 
 
 def test_exception_handling():
-    out = _reprex_basic('10 / 0')
-    one_t = _all_match(out, ['ZeroDivisionError'])
-    assert one_t[0], 'ZeroDivisionError not found in output'
+    out = reprex('10 / 0')
+    assert re.search('ZeroDivisionError', out)
 
 
 @skip_on_github
@@ -84,45 +84,35 @@ def test_output_to_clipboard():
 
 
 def test_misc_params():
-    code = """
+    raw_code = """
     var = 'some var'
     var
     """
-    out = reprex(_ptxt(code), venue='so', comment='#<>', advertise=True)
-    mlst = [
-        '    var = \'some var\'', '#<>',
-        'Created on.*by the \\[reprexpy package\\]'
-    ]
-    mout = _all_match(out, mlst)
-    for i, j in zip(mout, mlst):
-        assert i, '%r not found in output' % j
+    code = textwrap.dedent(raw_code).strip('\n')
+    out = reprex(code, venue='so', comment='#<>', advertise=True)
+    regex = (
+        '    var = \'some var\''
+        '.*#<>'
+        '.*Created on.*by the \\[reprexpy package\\]'
+    )
+    assert re.search(regex, out, flags=re.DOTALL)
 
 
 def test_si_imports():
-    x = _read_ex_fi('tests/reprexes/imports.py')
-    out = reprex(code=x, si=True)
-    x_in = [
+    code = _read_reprex_file('tests/reprexes/imports.py')
+    out = reprex(code, si=True)
+    imports = [
         'nbconvert', 'asttokens', 'pyimgur', 'stdlib-list', 'ipython', 'pyzmq'
     ]
-    x_in = [i + '==' for i in x_in]
-
-    mout = _all_match(out, x_in)
-    for i, j in zip(mout, x_in):
-        assert i, '%r not found in output' % j
+    for distribution in imports:
+        distribution_regex = distribution + '=='
+        assert re.search(distribution_regex, out)
 
 
 def test_si_non_imports():
-    x = _read_ex_fi('tests/reprexes/non-imports.py')
-    out = reprex(code=x, si=True)
-    not_in_x = ['pickledb', 'matplotlib', 'ipython']
-    not_in_x = [i + '==' for i in not_in_x]
-
-    mout = _all_match(out, not_in_x)
-    for i, j in zip(mout, not_in_x):
-        assert not i, '%r found in session info' % j
-
-
-def test_docstring_venue():
-    ex = _read_ex_fi_pair('docstring-venue')
-    out = reprex(ex[0], venue='sx')
-    assert out == ex[1]
+    code = _read_reprex_file('tests/reprexes/non-imports.py')
+    out = reprex(code, si=True)
+    non_imports = ['pickledb', 'matplotlib', 'ipython']
+    for distribution in non_imports:
+        distribution_regex = distribution + '=='
+        assert not re.search(distribution_regex, out)
