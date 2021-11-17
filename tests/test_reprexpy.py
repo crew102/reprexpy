@@ -53,6 +53,8 @@ def test_two_statements_per_line():
     _assert_reprex_exact_match('two-statements-per-line')
 
 
+def test_docstring_venue():
+    _assert_reprex_exact_match('docstring-venue', venue='sx')
 
 
 def test_plot_outputs():
@@ -70,19 +72,23 @@ def test_exception_handling():
 
 @skip_on_github
 def test_input_types():
-    ex = _read_ex_fi('tests/reprexes/txt-outputs.py')
-    out_x = _reprex_basic(ex)
-    out_infile = _reprex_basic(code_file='tests/reprexes/txt-outputs.py')
-    pyperclip.copy(ex)
-    out_clip = _reprex_basic()
-    assert len(set([out_x, out_infile, out_clip])) == 1
+    code = _read_reprex_file('tests/reprexes/txt-outputs.py')
+    out_str = reprex(code=code)
+
+    out_infile = reprex(code_file='tests/reprexes/txt-outputs.py')
+
+    pyperclip.copy(code)
+    out_clipboard = reprex()
+
+    assert out_str == out_infile == out_clipboard
 
 
 @skip_on_github
 def test_output_to_clipboard():
-    _reprex_basic('x = "hi there"; print(x)')
-    assert pyperclip.paste() == '```python\nx = "hi there"; ' \
-                                'print(x)\n#> hi there\n```'
+    code = 'print("hi there")'
+    expected_output = '```python\nprint("hi there")\n#> hi there\n```'
+    reprex(code)
+    assert pyperclip.paste() == expected_output
 
 
 def test_misc_params():

@@ -10,3 +10,5 @@ venv/
 .eggs/
 dev.py
 TODO.md
+*.Rproj*
+.pylintrc
