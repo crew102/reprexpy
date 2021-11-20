@@ -5,7 +5,7 @@ from setuptools import setup
 
 install_requires = [
     'pyperclip', 'asttokens', 'nbconvert<=6.0.1', 'nbformat', 'matplotlib',
-    'ipython', 'pyimgur', 'setuptools', 'stdlib-list', 'ipykernel', 'tornado'
+    'ipython', 'pyimgur', 'stdlib-list', 'ipykernel', 'tornado'
 ]
 
 is_low_v3 = sys.version_info[0] == 3 and sys.version_info[1] <= 4
