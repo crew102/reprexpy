@@ -128,8 +128,8 @@ def _get_code_block_start_stops(outputs, si):
     cb_starts = [0] + [i + 1 for i in cb_stops if i + 1 <= last_ind]
 
     assert len(cb_starts) == len(cb_stops), (
-        f'list of start indexes for code blocks is not the same length as'
-        f' list of stop indexes ({cb_starts} != {cb_stops})'
+        'list of start indexes for code blocks is not the same length as'
+        ' list of stop indexes ({} != {})'.format(cb_starts, cb_stops)
     )
 
     return list(zip(cb_starts, cb_stops))
@@ -213,7 +213,8 @@ def _get_markedup_urls(one_out, venue):
             for i in one_out if _is_plot_output(i)
         ]
         ptxt_out = [
-            f'    .. image:: {i}' if venue == 'sx' else f'![]({i})'
+            '    .. image:: {}'.format(i) if venue == 'sx'
+            else '![]({})'.format(i)
             for i in img_urls
         ]
         ptxt_out = '\n\n'.join(ptxt_out)
@@ -226,8 +227,8 @@ def _get_advertisement():
     now = datetime.datetime.now()
     date = now.strftime('%Y-%m-%d')
     return (
-        f'<sup>Created on {date} by the '
-        f'[reprexpy package](https://github.com/crew102/reprexpy)</sup>'
+        '<sup>Created on {} by the '.format(date) +
+        '[reprexpy package](https://github.com/crew102/reprexpy)</sup>'
     )
 
 
@@ -348,7 +349,7 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     # add txt_outputs to source code (input_chunks) to create txt_chunks
     if venue == 'sx':
         input_chunks = [[j for j in i if j != ''] for i in input_chunks]
-        input_chunks = [[f'>>> {j}' for j in i] for i in input_chunks]
+        input_chunks = [['>>> {}'.format(j) for j in i] for i in input_chunks]
     txt_chunks = [
         i + j if j else i
         for i, j in zip(input_chunks, txt_outputs)
@@ -361,7 +362,7 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     code_blocks = [txt_chunks[i[0]:(i[1] + 1)] for i in start_stops]
     code_blocks = ['\n'.join(i) for i in code_blocks]
     if venue == 'gh':
-        code_blocks = [f'```python\n{i}\n```' for i in code_blocks]
+        code_blocks = ['```python\n{}\n```'.format(i) for i in code_blocks]
 
     # extract urls to plots and add mark them up
     markedup_urls = [
