@@ -1,17 +1,11 @@
 import sys
-from os import path
-
+import os
 from setuptools import setup
 
 install_requires = [
     'pyperclip', 'asttokens', 'nbconvert<=6.0.1', 'nbformat', 'matplotlib',
     'ipython', 'pyimgur', 'stdlib-list', 'ipykernel', 'tornado'
 ]
-
-is_low_v3 = sys.version_info[0] == 3 and sys.version_info[1] <= 4
-if is_low_v3:
-    install_requires.remove('matplotlib')
-    install_requires.append('matplotlib<3')
 
 # "Beginning with Matplotlib 3.1, Python 3.6 or above is required", so if we're
 # building against python 3.5, we have to require matplotlib < 3.1. otherwise
@@ -21,8 +15,8 @@ if is_v35:
     install_requires.remove('matplotlib')
     install_requires.append('matplotlib<3.1')
 
-this_directory = path.abspath(path.dirname(__file__))
-with open(path.join(this_directory, 'README.md')) as f:
+this_directory = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(this_directory, 'README.md')) as f:
     long_description = f.read()
 
 if {'pytest', 'test', 'ptr'}.intersection(sys.argv):
