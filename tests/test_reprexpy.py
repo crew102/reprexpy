@@ -65,6 +65,14 @@ def test_stack_overflow_venue():
     assert _count_mismatching_lines('so-venue', venue='so') == 1
 
 
+def test_plot_and_txt_outputs():
+    assert _count_mismatching_lines('plot-and-txt-output') == 2
+
+
+def test_unicode():
+    _assert_reprex_exact_match('unicode')
+
+
 def test_exception_handling():
     out = reprex('10 / 0')
     assert re.search('ZeroDivisionError', out)
