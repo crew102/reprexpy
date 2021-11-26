@@ -343,7 +343,6 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     input_chunks = _get_input_chunks(code_str, si=si)
     node_out = _run_nb(input_chunks, kernel_name)
     outputs = _extract_outputs(node_out.cells)
-    start_stops = _get_code_block_start_stops(outputs, si=si)
     txt_outputs = _get_txt_outputs(outputs, comment=comment, venue=venue)
 
     # add txt_outputs to source code (input_chunks) to create txt_chunks
@@ -359,6 +358,7 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
     txt_chunks = ['\n'.join(i) for i in txt_chunks]
 
     # group txt_chunks into code_blocks
+    start_stops = _get_code_block_start_stops(outputs, si=si)
     code_blocks = [txt_chunks[i[0]:(i[1] + 1)] for i in start_stops]
     code_blocks = ['\n'.join(i) for i in code_blocks]
     if venue == 'gh':
