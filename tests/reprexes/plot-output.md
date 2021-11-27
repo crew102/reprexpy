@@ -9,18 +9,18 @@ plt.ylabel('some numbers');
 plt.show()
 ```
 
-![](https://i.imgur.com/InL6CWO.png)
+![](https://i.imgur.com/9oW9Zsy.png)
 
 ```python
 plt.close()
 
 # another plot
-plt.plot(data);
+plt.plot([3, 3]);
 plt.xlabel('more numbers');
 plt.show()
 ```
 
-![](https://i.imgur.com/x60JJsy.png)
+![](https://i.imgur.com/L4HNklT.png)
 
 ```python
 plt.close()
@@ -30,4 +30,4 @@ plt.plot(data);
 plt.show()
 ```
 
-![](https://i.imgur.com/8djqstY.png)
+![](https://i.imgur.com/1MedfL6.png)

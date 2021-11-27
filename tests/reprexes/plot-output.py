@@ -9,7 +9,7 @@ plt.show()
 plt.close()
 
 # another plot
-plt.plot(data);
+plt.plot([3, 3]);
 plt.xlabel('more numbers');
 plt.show()
 plt.close()
