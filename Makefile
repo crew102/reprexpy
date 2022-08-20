@@ -7,6 +7,7 @@ test:
 
 clean:
 	- rm -rf docs/build
+	- rm -rf dist
 
 dist:
 	- rm dist/*
