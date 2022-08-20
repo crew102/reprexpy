@@ -1,5 +1,6 @@
-import sys
 import os
+import sys
+
 from setuptools import setup
 
 install_requires = [
@@ -23,7 +24,7 @@ if {'pytest', 'test', 'ptr'}.intersection(sys.argv):
     setup_requires = ['pytest-runner']
 else:
     setup_requires = []
-    
+
 setup(
     name='reprexpy',
     version='0.3.1',

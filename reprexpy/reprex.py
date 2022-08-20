@@ -34,23 +34,18 @@ def _get_source_code(code, code_file):
 # an "input chunk" includes all lines (including comments/empty lines) that come
 # after the python statement in the preceding chunk and before the statement in
 # this chunk. each chunk will be placed in a notebook cell.
-def _get_input_chunks(code_str, si):
+def _split_input_into_cells(code_str):
     tok = asttokens.ASTTokens(code_str, parse=True)
 
     ends = {statement.last_token.end[0] for statement in tok.tree.body}
-    ends = list(sorted(ends))
+    ends = sorted(ends)
 
-    starts = [i + 1 for i in ends]
-    starts.insert(0, 1)
-    starts = starts[:-1]
+    starts = ends.copy()
+    starts.insert(0, 0)
+    starts.pop()
 
     code_lines = code_str.splitlines()
-    schunks = [code_lines[start - 1:end] for start, end in zip(starts, ends)]
-    if si:
-        schunks = schunks + [
-            ['import reprexpy', 'print(reprexpy.SessionInfo())']
-        ]
-    return schunks
+    return [code_lines[start:end] for start, end in zip(starts, ends)]
 
 
 def _get_setup_code():
@@ -64,10 +59,8 @@ def _get_setup_code():
     return [[magic_one]] + [[python_statements]]
 
 
-def _run_nb(statement_chunks, kernel_name):
-    scode = _get_setup_code()
-    statement_chunks = scode + statement_chunks
 
+def _run_cells(statement_chunks, kernel_name):
     nb = nbformat.v4.new_notebook()
     nb['cells'] = [
         nbformat.v4.new_code_cell('\n'.join(i))
@@ -86,8 +79,7 @@ def _run_nb(statement_chunks, kernel_name):
 
 
 def _extract_outputs(cells):
-    all_outputs = [[] if not i['outputs'] else i['outputs'] for i in cells]
-    return all_outputs[len(_get_setup_code()):]
+    return [[] if not i['outputs'] else i['outputs'] for i in cells]
 
 
 def _is_plot_output(el):
@@ -178,8 +170,8 @@ def _get_one_txt_output(output_el, comment, venue):
 
     if venue == 'sx':
         return txt
-    else:
-        return [comment + ' ' + i for i in txt]
+
+    return [comment + ' ' + i for i in txt]
 
 
 # for each element of the output list (i.e., for each output for a given cell),
@@ -339,20 +331,31 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
         si = False
         advertise = False
 
+    input_cells = _split_input_into_cells(code_str)
+
+    if si:
+        input_cells = input_cells + [
+            ['import reprexpy', 'print(reprexpy.SessionInfo())']
+        ]
+
+    setup_code = _get_setup_code()
+    all_cells = setup_code + input_cells
+
     print('Rendering reprex...')
-    input_chunks = _get_input_chunks(code_str, si=si)
-    node_out = _run_nb(input_chunks, kernel_name)
+    node_out = _run_cells(all_cells, kernel_name)
+
     outputs = _extract_outputs(node_out.cells)
+    outputs = outputs[len(setup_code):]
     txt_outputs = _get_txt_outputs(outputs, comment=comment, venue=venue)
 
     # add txt_outputs to source code (input_chunks) to create txt_chunks
     if venue == 'sx':
-        input_chunks = [[j for j in i if j != ''] for i in input_chunks]
-        input_chunks = [['>>> {}'.format(j) for j in i] for i in input_chunks]
-    txt_chunks = [
-        i + j if j else i
-        for i, j in zip(input_chunks, txt_outputs)
-    ]
+        input_cells = [[j for j in i if j != ''] for i in input_cells]
+
+        input_cells = [['>>> {}'.format(j) for j in i] for i in input_cells]
+
+    txt_chunks = [i + j for i, j in zip(input_cells, txt_outputs)]
+
     if venue in ['so', 'sx']:
         txt_chunks = [['    ' + j for j in i] for i in txt_chunks]
     txt_chunks = ['\n'.join(i) for i in txt_chunks]
@@ -388,8 +391,6 @@ def reprex(code=None, code_file=None, venue='gh', kernel_name=None,
 
     # convert list of code blocks to a string
     out = '\n\n'.join(final_blocks)
-    if not isinstance(out, str):
-        out = out.encode('utf8')
 
     try:
         pyperclip.copy(out)
