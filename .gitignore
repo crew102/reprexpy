@@ -11,4 +11,3 @@ venv/
 dev.py
 TODO.md
 *.Rproj*
-.pylintrc
