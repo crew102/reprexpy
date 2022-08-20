@@ -4,7 +4,7 @@ import sys
 from setuptools import setup
 
 install_requires = [
-    'pyperclip', 'asttokens', 'nbconvert<=6.0.1', 'nbformat', 'matplotlib',
+    'pyperclip', 'asttokens', 'nbconvert', 'nbformat', 'matplotlib',
     'ipython', 'pyimgur', 'stdlib-list', 'ipykernel', 'tornado'
 ]
 

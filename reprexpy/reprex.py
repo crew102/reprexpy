@@ -59,6 +59,14 @@ def _get_setup_code():
     return [[magic_one]] + [[python_statements]]
 
 
+class ExecutePreprocessorStoreHist(nbconvert.preprocessors.ExecutePreprocessor):
+    def async_execute_cell(self, cell, cell_index, execution_count,
+                           store_history):
+        super().async_execute_cell(
+            cell=cell, cell_index=cell_index, execution_count=execution_count,
+            store_history=True
+        )
+
 
 def _run_cells(statement_chunks, kernel_name):
     nb = nbformat.v4.new_notebook()
@@ -67,11 +75,11 @@ def _run_cells(statement_chunks, kernel_name):
         for i in statement_chunks
     ]
     if kernel_name is not None:
-        ep = nbconvert.preprocessors.ExecutePreprocessor(
+        ep = ExecutePreprocessorStoreHist(
             timeout=600, allow_errors=True, kernel_name=kernel_name
         )
     else:
-        ep = nbconvert.preprocessors.ExecutePreprocessor(
+        ep = ExecutePreprocessorStoreHist(
             timeout=600, allow_errors=True
         )
     node_out, _ = ep.preprocess(nb, {})
