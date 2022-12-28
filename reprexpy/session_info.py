@@ -148,11 +148,12 @@ class SessionInfo:
 
     @staticmethod
     def _get_dist_info(dist):
-        try:
+        if dist.has_metadata('top_level.txt'):
             md = dist.get_metadata('top_level.txt')
             mods = md.splitlines()
-        except FileNotFoundError:
+        else:
             mods = []
+
         return {
             'project_name': dist.project_name,
             'version': dist.version,
