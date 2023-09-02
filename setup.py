@@ -27,7 +27,7 @@ else:
 
 setup(
     name='reprexpy',
-    version='0.3.2',
+    version='0.3.3',
     description='Render reproducible examples of Python code (port of R '
                 'package `reprex`)',
     long_description=long_description,
