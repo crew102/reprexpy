@@ -8,14 +8,6 @@ install_requires = [
     'ipython', 'pyimgur', 'stdlib-list', 'ipykernel', 'tornado'
 ]
 
-# "Beginning with Matplotlib 3.1, Python 3.6 or above is required", so if we're
-# building against python 3.5, we have to require matplotlib < 3.1. otherwise
-# we'll get latest version of matplotlib which will throw error
-is_v35 = sys.version_info[0] == 3 and sys.version_info[1] == 5
-if is_v35:
-    install_requires.remove('matplotlib')
-    install_requires.append('matplotlib<3.1')
-
 this_directory = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(this_directory, 'README.md')) as f:
     long_description = f.read()
@@ -40,6 +32,6 @@ setup(
     install_requires=install_requires,
     tests_require=['pytest', 'pyzmq', 'pickledb'],
     setup_requires=setup_requires,
-    python_requires='>=3.5',
+    python_requires='>=3.8',
     package_data={'reprexpy': ['examples/*.py']}
 )
