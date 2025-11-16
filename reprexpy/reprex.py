@@ -1,7 +1,7 @@
 import os
 import re
 import datetime
-import pkg_resources
+import importlib.resources
 
 import asttokens
 import nbconvert
@@ -245,9 +245,15 @@ def reprex_ex(file):
     str
         A path to an example reprex file.
     """
-    return pkg_resources.resource_filename(
-        'reprexpy', os.path.join('examples', file)
-    )
+    # Use importlib.resources.path() for Python 3.8 compatibility
+    # For regular files (not zip), the path remains valid after context exit
+    path_context = importlib.resources.path('reprexpy.examples', file)
+    try:
+        path = path_context.__enter__()
+        return str(path)
+    finally:
+        # Clean up the context manager
+        path_context.__exit__(None, None, None)
 
 
 # reprex() ---------------------------

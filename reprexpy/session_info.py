@@ -3,11 +3,11 @@ import sys
 import datetime
 import os
 import re
+import importlib.metadata
 
 import IPython.core.getipython
 import asttokens
 import stdlib_list
-import pkg_resources
 
 
 # goal: id distribution names + version numbers for all distributions that
@@ -89,11 +89,16 @@ class SessionInfo:
         return self._print()
 
     def _print(self):
+        # Filter out None values from pkg_info
+        valid_pkg_info = {
+            k: v for k, v in self.pkg_info.items()
+            if v[0] is not None and v[1] is not None
+        }
         fl = (
             [self._as_heading('Session info')] +
             [key + ': ' + value for key, value in self.session_info.items()] +
             [self._as_heading('Packages')] +
-            sorted(set(i[0] + '==' + i[1] for i in self.pkg_info.values()))
+            sorted(set(i[0] + '==' + i[1] for i in valid_pkg_info.values()))
         )
         return '\n'.join(fl)
 
@@ -148,23 +153,83 @@ class SessionInfo:
 
     @staticmethod
     def _get_dist_info(dist):
-        if dist.has_metadata('top_level.txt'):
-            md = dist.get_metadata('top_level.txt')
-            mods = md.splitlines()
-        else:
-            mods = []
+        mods = []
+        try:
+            # Try to get top_level.txt metadata
+            md = dist.read_text('top_level.txt')
+            if md:
+                mods = md.splitlines()
+        except (FileNotFoundError, AttributeError, TypeError):
+            pass
+
+        # If top_level.txt is not available, try to infer modules from files
+        if not mods:
+            file_mods = set()
+            files = getattr(dist, 'files', None)
+            if files:
+                for file in files:
+                    if file is None:
+                        continue
+
+                    try:
+                        parts = file.parts
+                    except AttributeError:
+                        parts = tuple(str(file).split('/'))
+
+                    if not parts:
+                        continue
+
+                    top_part = parts[0]
+
+                    # Skip metadata / binary directories
+                    if not top_part or top_part in ('.', '__pycache__'):
+                        continue
+                    if top_part.endswith(('.dist-info', '.data')):
+                        continue
+
+                    # Only consider python packages/modules
+                    name = None
+                    file_name = getattr(file, 'name', None) or os.path.basename(str(file))
+                    suffix = getattr(file, 'suffix', '')
+
+                    if file_name == '__init__.py':
+                        name = top_part
+                    elif suffix == '.py' and len(parts) == 1:
+                        name = file_name[:-3]
+                    elif suffix in ('.py', '.pyi') and len(parts) > 1:
+                        name = top_part
+
+                    if name:
+                        file_mods.add(name)
+
+            mods = sorted(file_mods)
+
+        # Get project name from metadata
+        # All distributions should have 'Name' in metadata
+        project_name = dist.metadata.get('Name', '')
+        if not project_name:
+            # Fallback: try to get from distribution lookup
+            # This shouldn't normally happen, but handle it gracefully
+            project_name = ''
 
         return {
-            'project_name': dist.project_name,
+            'project_name': project_name,
             'version': dist.version,
             'mods': mods
         }
 
     def _get_version_info(self, modname, all_dist_info):
         try:
-            dist_info = pkg_resources.get_distribution(modname)
-            return dist_info.project_name, dist_info.version
-        except pkg_resources.DistributionNotFound:
+            dist_info = importlib.metadata.distribution(modname)
+            # Get project name from metadata
+            # All distributions should have 'Name' in metadata
+            project_name = dist_info.metadata.get('Name', '')
+            if not project_name:
+                # If Name is missing, try using the modname as fallback
+                # This shouldn't normally happen
+                project_name = modname
+            return project_name, dist_info.version
+        except importlib.metadata.PackageNotFoundError:
             ml = modname.split('.')
             if len(ml) > 1:
                 modname = '.'.join(ml[:-1])
@@ -178,7 +243,7 @@ class SessionInfo:
                 if x:
                     return x[0]
                 else:
-                    return _, _
+                    return None, None
 
     def _get_stdlib_list(self):
         this_py = self.session_info['Python']
@@ -199,7 +264,7 @@ class SessionInfo:
     def _get_pkg_info_sectn(self):
         pmods = self._get_potential_mods()
         all_dist_info = [
-            self._get_dist_info(i) for i in pkg_resources.working_set
+            self._get_dist_info(i) for i in importlib.metadata.distributions()
         ]
         libs = self._get_stdlib_list()
         return {
