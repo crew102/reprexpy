@@ -1,3 +1,5 @@
+sphinx
 m2r2
 nbconvert==6.5.3
 numpy==1.22.0
+lxml_html_clean
