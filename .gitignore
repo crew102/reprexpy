@@ -5,6 +5,7 @@ dist/
 .pytest_cache/
 reprexpy.egg-info/
 venv/
+.venv/
 .cache/
 *.pyc
 .eggs/

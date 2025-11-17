@@ -1,9 +1,9 @@
 docs:
-	. venv/bin/activate; cd docs; sphinx-build source build; deactivate
+	. .venv/bin/activate; cd docs; sphinx-build source build; deactivate
 
 # Reminder: To run tests locally against several OS/Python combos, run `act`
 test:
-	venv/bin/python setup.py test
+	.venv/bin/python setup.py test
 
 clean:
 	- rm -rf docs/build
