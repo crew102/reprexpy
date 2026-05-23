@@ -1,0 +1,92 @@
+---
+description: Refactoring guardrails: behavior-preserving, minimal, non-decorative code changes
+alwaysApply: true
+---
+
+# Refactoring Guardrails
+
+When asked to refactor, clean up, simplify, reorganize, modernize, or improve code quality, treat the task as a behavior-preserving refactor unless explicitly told otherwise.
+
+## Definition of Done
+
+A refactor is successful only if:
+
+1. Existing behavior is preserved.
+2. The diff is smaller and easier to reason about.
+3. The change solves a specific code problem.
+4. Tests, type checks, linters, or equivalent project checks pass.
+5. The final answer explains what changed and what behavior was intentionally preserved.
+
+## Do Not Make Decorative Changes
+
+Do not add or change code merely to appear more modern, clever, documented, or "clean."
+
+Avoid unless directly necessary:
+
+- New abstractions
+- New classes
+- New helper functions
+- New interfaces/types
+- New dependencies
+- New framework/library features
+- Renaming public functions, arguments, files, columns, API fields, routes, or exported objects
+- Broad formatting-only rewrites
+- Docstrings/comments that simply restate the code
+- Large rewrites when a small local change would work
+
+## Refactoring Priorities
+
+Prefer changes in this order:
+
+1. Remove duplication that is already causing maintenance risk.
+2. Simplify control flow.
+3. Improve names only when the existing name actively misleads.
+4. Extract functions only when it reduces repeated logic or clarifies a genuinely complex block.
+5. Move code only when it improves locality with existing project patterns.
+6. Delete dead code only when you can prove it is unused.
+
+## Required Workflow
+
+Before editing:
+
+1. Identify the specific code smell or maintenance problem.
+2. Identify the smallest behavior-preserving change.
+3. Check nearby code and follow existing project conventions.
+4. State what will not be changed.
+
+During editing:
+
+1. Make one conceptual change at a time.
+2. Keep the public interface stable.
+3. Preserve existing tests unless they are clearly wrong.
+4. Do not mix refactoring with feature work.
+
+After editing:
+
+1. Run the narrowest relevant tests/checks first.
+2. Then run broader checks if the project has them.
+3. Summarize:
+   - code smell addressed
+   - files changed
+   - behavior-preservation evidence
+   - checks run
+   - anything intentionally not changed
+
+## Comments and Documentation
+
+Only add comments or docs when they explain non-obvious intent, constraints, tradeoffs, or external behavior.
+
+Do not add comments that narrate obvious implementation details.
+
+Bad:
+
+```js
+// Loop through users
+for (const user of users) { ... }
+```
+
+Good:
+
+```js
+for (const user of users) { ... }
+```
