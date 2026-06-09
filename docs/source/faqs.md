@@ -1,3 +1,5 @@
+:orphan:
+
 ## FAQs
 
 **1. How do I suppress the output the intermediate matplotlib functions in my reprex?**

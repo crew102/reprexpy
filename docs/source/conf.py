@@ -25,7 +25,7 @@ author = u'Christopher Baker'
 # The short X.Y version
 version = u''
 # The full version, including alpha/beta/rc tags
-release = u'0.3.3'
+release = u'0.3.4'
 
 # -- General configuration ---------------------------------------------------
 
@@ -40,7 +40,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
-    'm2r2'
+    'myst_parser',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -49,7 +49,10 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-source_suffix = ['.rst', '.md']
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 # source_parsers = {
 #    '.md': 'recommonmark.parser.CommonMarkParser',
@@ -69,6 +72,8 @@ master_doc = 'index'
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path .
 exclude_patterns = []
+
+suppress_warnings = ['myst.header']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'

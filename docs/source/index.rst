@@ -1,14 +1,17 @@
 reprexpy
 ====================================
 
-.. mdinclude:: ../../README.md
+.. include:: ../../README.md
+   :parser: myst_parser.sphinx_
    :start-line: 2
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-.. mdinclude:: faqs.md
+   modules
+.. include:: faqs.md
+   :parser: myst_parser.sphinx_
 
 Reference
 ------------------------------------
