@@ -1,5 +1,5 @@
 docs:
-	. .venv/bin/activate; cd docs; sphinx-build source build; deactivate
+	. .venv/bin/activate; pip install -q -r docs/requirements.txt -e .; cd docs; sphinx-build -W -b html source build; deactivate
 
 # Reminder: To run tests locally against several OS/Python combos, run `act`
 test:
