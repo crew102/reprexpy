@@ -1,5 +1,5 @@
 sphinx
-m2r2
+myst-parser
 nbconvert==7.17.1
 numpy==1.22.0
 lxml_html_clean
